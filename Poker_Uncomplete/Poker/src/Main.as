@@ -11,6 +11,7 @@
 	import com.novabox.poker.states.Preflop;
 	import com.novabox.pokerGUI.PokerGUI;
 	import com.novabox.tools.TimeManager;
+	import com.rien.IntelligentPlayer;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	
@@ -44,7 +45,7 @@
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 			// entry point
 						
-			var players:Array = [	new HumanPlayer("Human", PokerTable.PLAYER_INIT_STACK),
+			var players:Array = [	new IntelligentPlayer("IA", PokerTable.PLAYER_INIT_STACK),
 									new PokerPlayer("player 6", PokerTable.PLAYER_INIT_STACK),
 									new PokerPlayer("player 7", PokerTable.PLAYER_INIT_STACK),
 									new PokerPlayer("player 8", PokerTable.PLAYER_INIT_STACK)
