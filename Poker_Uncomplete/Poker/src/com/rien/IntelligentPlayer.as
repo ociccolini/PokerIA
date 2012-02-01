@@ -48,11 +48,11 @@
 		}
 		
 		public function perception() : void {
-			
+			// Remplir base de fait
 		}
 		
 		public function analyse() : void {
-			
+			// Inférer
 		}
 		
 		public function action() : void {
@@ -96,7 +96,7 @@
 		
 		public override function ProcessPlayerAction(_player:PokerPlayer) : void
 		{
-			
+			// ici on pourra analyser le jeux du joueur passé en parametre
 		}
 		
 		public override function ProcessPlayerShowdown(_player:PokerPlayer) : void
