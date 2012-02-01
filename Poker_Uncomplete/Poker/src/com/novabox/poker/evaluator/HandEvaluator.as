@@ -49,7 +49,7 @@
 			 
 			 var prime:int =  HandEvaluatorArrays.primes[_card.GetHeight()];
 			 var height:int = _card.GetHeight() << 8;
-			 var heightMask : int = 1 << (16 + _card.GetSuit());
+			 var heightMask : int = 1 << (16 + _card.GetHeight());
 			 
 			 var value:int = prime | height | suit | heightMask;
 			return value;
