@@ -1,5 +1,6 @@
 ﻿package com.rien 
 {
+	import com.novabox.playingCards.PlayingCard;
 	import com.novabox.poker.PokerPlayer;
 	import com.novabox.poker.PokerTable;
 	import com.novabox.poker.PokerAction;
@@ -28,35 +29,35 @@
 		private static const 	NeJamaisJouer:int = 0;
 		
 		private var tableauProbabiliteCartesDepareillesPreflop:Array =  [
-																		[3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-																		[3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-																		[3, 3, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-																		[3, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0],
-																		[1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
-																		[1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0],
-																		[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-																		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-																		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-																		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-																		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-																		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]		
+																			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+																			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+																			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+																			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+																			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+																			[0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+																			[0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1],
+																			[0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+																			[0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 3],
+																			[0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 3],
+																			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3],
+																			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3]
 																		];
 
-		private var tableauProbabiliteCartesMemesCouleursPreflop:Array =  	[
-																				[3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-																				[3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-																				[3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-																				[3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-																				[3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0],
-																				[2, 2, 2, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0],
-																				[2, 1, 2, 2, 2, 2, 3, 0, 0, 0, 0, 0, 0],
-																				[2, 1, 0, 1, 1, 1, 1, 3, 0, 0, 0, 0, 0],
-																				[2, 1, 0, 0, 0, 1, 1, 1, 2, 0, 0, 0, 0],
-																				[1, 1, 0, 0, 0, 0, 0, 1, 1, 2, 0, 0, 0],
-																				[1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0],
-																				[1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-																				[1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
-																			];
+		private var tableauProbabiliteCartesMemesCouleursPreflop:Array =  [
+																		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+																		[0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+																		[0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+																		[0, 0, 0, 2, 1, 1, 0, 0, 0, 0, 0, 1, 1],
+																		[0, 0, 0, 0, 2, 1, 1, 1, 0, 0, 0, 1, 2],
+																		[0, 0, 0, 0, 0, 3, 1, 1, 1, 1, 0, 1, 2],
+																		[0, 0, 0, 0, 0, 0, 3, 2, 2, 2, 2, 1, 2],
+																		[0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 2, 2, 2],
+																		[0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3],
+																		[0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3],
+																		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3],
+																		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3],
+																		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3]
+																	];
 																
 >>>>>>> origin
 		public function IntelligentPlayer(_name:String, _stackValue:Number) 
@@ -70,7 +71,18 @@
 		
 		public function CalculProbabilite() : int
 		{
+			var premiereCarte:PlayingCard = hand[0];
+			var deuxiemeCarte:PlayingCard = hand[1];
+			var probabilite:int;
 			
+			if ( AvoirUnePaire() || CartesDeMemeCouleur() )
+			{
+				probabilite = tableauProbabiliteCartesMemesCouleursPreflop[GetMin()][getMax()];
+			}
+			else 
+			{
+				probabilite = tableauProbabiliteCartesDepareillesPreflop[GetMin()][getMax()];
+			}
 		}
 		
 		public override function Play(_pokerTable:PokerTable) : Boolean
@@ -201,6 +213,26 @@
 		public override function ProcessPlayerWon(_player:PokerPlayer) : void
 		{
 			
+		}
+		
+		private function AvoirUnePaire():Boolean 
+		{
+			return premiereCarte.GetHeight() == deuxiemeCarte.GetHeight();
+		}
+		
+		private function CartesDeMemeCouleur():Boolean 
+		{
+			return premiereCarte.GetSuit() == deuxiemeCarte.GetSuit();
+		}
+		
+		private function getMax(premiereCarte:PlayingCard, premiereCarte:PlayingCard):int 
+		{
+			return (premiereCarte.GetHeight() > deuxiemeCarte.GetHeight())?premiereCarte.GetHeight():deuxiemeCarte.GetHeight();
+		}
+		
+		private function getMin(premiereCarte:PlayingCard, premiereCarte:PlayingCard):int 
+		{
+			return (premiereCarte.GetHeight() > deuxiemeCarte.GetHeight())?deuxiemeCarte.GetHeight():premiereCarte.GetHeight();
 		}
 	}
 }
