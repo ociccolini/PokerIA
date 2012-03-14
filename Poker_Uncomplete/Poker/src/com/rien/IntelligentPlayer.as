@@ -8,9 +8,60 @@
 	
 	public class IntelligentPlayer extends PokerPlayer
 	{
+		private static const 	ToujoursJouer:int = 3;
+		private static const 	JouerMilieuOuFinParole:int = 2;
+		private static const 	JouerSeulementFinParole:int = 1;
+		private static const 	NeJamaisJouer:int = 0;
+		
+		private var tableauProbabiliteCartesDepareilles:Array =  [[3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+																[3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+																[3, 3, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+																[3, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0],
+																[1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+																[1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0],
+																[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+																[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+																[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+																[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+																[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+																[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]		
+																];
+
+		private var tableauProbabiliteCartesMemesCouleurs:Array =  [[3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+																[3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+																[3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+																[3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+																[3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0],
+																[2, 2, 2, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0],
+																[2, 1, 2, 2, 2, 2, 3, 0, 0, 0, 0, 0, 0],
+																[2, 1, 0, 1, 1, 1, 1, 3, 0, 0, 0, 0, 0],
+																[2, 1, 0, 0, 0, 1, 1, 1, 2, 0, 0, 0, 0],
+																[1, 1, 0, 0, 0, 0, 0, 1, 1, 2, 0, 0, 0],
+																[1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0],
+																[1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+																[1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+																];
+																
 		public function IntelligentPlayer(_name:String, _stackValue:Number) 
 		{
 			super(_name, _stackValue);
+		}
+		
+		public function CalculProbabilite() : int
+		{
+			var tableauProbabiliteCartesDepareilles:Array =  [[3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+																[3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+																[3, 3, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+																[3, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0],
+																[1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+																[1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0],
+																[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+																[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+																[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+																[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+																[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+																[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]		
+																];
 		}
 		
 		public override function Play(_pokerTable:PokerTable) : Boolean
@@ -58,6 +109,8 @@
 		public function action() : void {
 			
 		}
+		
+		
 		
 		public override function ProcessHandStart(_pokerTable:PokerTable) : void
 		{
