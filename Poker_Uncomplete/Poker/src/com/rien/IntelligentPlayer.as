@@ -7,7 +7,7 @@
 	import flash.media.Video;
 	import flash.net.FileReferenceList;
 	import com.rien.expertSystem.*;
-	
+	import com.novabox.playingCards.Suit;
 	
 	public class IntelligentPlayer extends PokerPlayer
 	{
@@ -80,7 +80,9 @@
 			}
 			else 
 			{
-				probabilite = tableauProbabiliteCartesDepareillesPreflop[GetMin(premiereCarte, deuxiemeCarte)][GetMax(premiereCarte, deuxiemeCarte)];
+				probabilite = tableauProbabiliteCartesDepareillesPreflop[GetMin(premiereCarte, deuxiemeCarte)][GetMax(premiereCarte, deuxiemeCarte) - 1];
+				trace("ligne:" + GetMin(premiereCarte, deuxiemeCarte));
+				trace("colonne:" + (GetMax(premiereCarte, deuxiemeCarte)-1));
 			}
 			
 			return probabilite;
