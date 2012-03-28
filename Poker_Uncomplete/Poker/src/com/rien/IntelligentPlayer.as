@@ -11,7 +11,6 @@
 	
 	public class IntelligentPlayer extends PokerPlayer
 	{
-<<<<<<< HEAD
 		private var expertSystem : ExpertSystem = new ExpertSystem();
 		
 		public static const FactA:Fact = new Fact("A");
@@ -22,7 +21,7 @@
 		public static const FactF:Fact = new Fact("F");
 		public static const FactG:Fact = new Fact("G");
 		
-=======
+		
 		private static const 	ToujoursJouer:int = 3;
 		private static const 	JouerMilieuOuFinParole:int = 2;
 		private static const 	JouerSeulementFinParole:int = 1;
@@ -59,7 +58,7 @@
 																		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3]
 																	];
 																
->>>>>>> origin
+		
 		public function IntelligentPlayer(_name:String, _stackValue:Number) 
 		{
 			super(_name, _stackValue);
@@ -75,19 +74,21 @@
 			var deuxiemeCarte:PlayingCard = hand[1];
 			var probabilite:int;
 			
-			if ( AvoirUnePaire() || CartesDeMemeCouleur() )
+			if ( AvoirUnePaire(premiereCarte, deuxiemeCarte) || CartesDeMemeCouleur(premiereCarte, deuxiemeCarte) )
 			{
-				probabilite = tableauProbabiliteCartesMemesCouleursPreflop[GetMin()][getMax()];
+				probabilite = tableauProbabiliteCartesMemesCouleursPreflop[GetMin(premiereCarte, deuxiemeCarte)][GetMax(premiereCarte, deuxiemeCarte)];
 			}
 			else 
 			{
-				probabilite = tableauProbabiliteCartesDepareillesPreflop[GetMin()][getMax()];
+				probabilite = tableauProbabiliteCartesDepareillesPreflop[GetMin(premiereCarte, deuxiemeCarte)][GetMax(premiereCarte, deuxiemeCarte)];
 			}
+			
+			return probabilite;
 		}
 		
 		public override function Play(_pokerTable:PokerTable) : Boolean
 		{
-			if (CanCheck(_pokerTable))
+			/*if (CanCheck(_pokerTable))
 			{
 				if (Math.random() < 0.5)
 				{
@@ -115,10 +116,11 @@
 				{
 					Fold();
 				}
-			}
+			}*/
 			
-			perception();
-			analyse();
+			trace("-> " + CalculProbabilite());
+			//perception();
+			//analyse();
 			
 			return (lastAction != PokerAction.NONE);
 		}
@@ -215,22 +217,22 @@
 			
 		}
 		
-		private function AvoirUnePaire():Boolean 
+		private function AvoirUnePaire(premiereCarte:PlayingCard, deuxiemeCarte:PlayingCard):Boolean 
 		{
 			return premiereCarte.GetHeight() == deuxiemeCarte.GetHeight();
 		}
 		
-		private function CartesDeMemeCouleur():Boolean 
+		private function CartesDeMemeCouleur(premiereCarte:PlayingCard, deuxiemeCarte:PlayingCard):Boolean 
 		{
 			return premiereCarte.GetSuit() == deuxiemeCarte.GetSuit();
 		}
 		
-		private function getMax(premiereCarte:PlayingCard, premiereCarte:PlayingCard):int 
+		private function GetMax(premiereCarte:PlayingCard, deuxiemeCarte:PlayingCard):int 
 		{
 			return (premiereCarte.GetHeight() > deuxiemeCarte.GetHeight())?premiereCarte.GetHeight():deuxiemeCarte.GetHeight();
 		}
 		
-		private function getMin(premiereCarte:PlayingCard, premiereCarte:PlayingCard):int 
+		private function GetMin(premiereCarte:PlayingCard, deuxiemeCarte:PlayingCard):int 
 		{
 			return (premiereCarte.GetHeight() > deuxiemeCarte.GetHeight())?deuxiemeCarte.GetHeight():premiereCarte.GetHeight();
 		}
