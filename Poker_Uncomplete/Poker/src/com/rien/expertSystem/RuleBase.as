@@ -7,6 +7,39 @@
 		public function RuleBase() 
 		{
 			rules = new Array();
+			
+			// ******************************************* BASE DE REGLES *****************************************
+			
+			
+			// ****************** PREFLOP ****************
+			
+			AddRule(new Rule (FactBase.EVENT_COUCHER, 	new Array(FactBase.EVENT_PREFLOP, FactBase.JOUER_JAMAIS))); // ajout si besoin de relancer ou suivre
+			AddRule(new Rule (FactBase.EVENT_CHECK, 	new Array(FactBase.EVENT_PREFLOP, FactBase.JOUER_JAMAIS))); // ajout si besoin de relancer ou suivre
+			
+			// Trouver fait differenciant le suivre du relancer (aggressivité, random ?, ...)
+			AddRule(new Rule (FactBase.EVENT_SUIVRE, 	new Array(FactBase.EVENT_PREFLOP, FactBase.JOUER_MILIEU_OU_FIN, FactBase.PAROLE_MILIEU)));
+			AddRule(new Rule (FactBase.EVENT_SUIVRE, 	new Array(FactBase.EVENT_PREFLOP, FactBase.JOUER_MILIEU_OU_FIN, FactBase.PAROLE_FIN)));
+			AddRule(new Rule (FactBase.EVENT_CHECK, 	new Array(FactBase.EVENT_PREFLOP, FactBase.JOUER_MILIEU_OU_FIN, FactBase.PAROLE_MILIEU)));
+			AddRule(new Rule (FactBase.EVENT_RELANCER, 	new Array(FactBase.EVENT_PREFLOP, FactBase.JOUER_MILIEU_OU_FIN, FactBase.PAROLE_FIN)));
+			
+			// Trouver fait differenciant le suivre du relancer (aggressivité, random ?, ...)
+			AddRule(new Rule (FactBase.EVENT_SUIVRE, 	new Array(FactBase.EVENT_PREFLOP, FactBase.JOUER_FIN, FactBase.PAROLE_FIN)));
+			AddRule(new Rule (FactBase.EVENT_RELANCER, 	new Array(FactBase.EVENT_PREFLOP, FactBase.JOUER_FIN, FactBase.PAROLE_FIN)));
+			
+			
+			// ****************** FLOP ****************
+			
+			
+			
+			// ****************** River ****************
+			
+			
+			
+			// ****************** Turn ****************
+			
+			
+			
+			// ******************************************* FIN BASE DE REGLES *****************************************
 		}
 		
 		public function AddRule(_rule:Rule) : void

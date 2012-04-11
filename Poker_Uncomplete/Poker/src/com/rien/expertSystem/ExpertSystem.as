@@ -13,6 +13,7 @@
 			factBase = new FactBase();
 			ruleBase = new RuleBase();	
 			inferedFacts = new Array();
+			
 		}
 
 		public function GetFactBase() : FactBase
