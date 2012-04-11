@@ -13,6 +13,12 @@
 	{
 		private var expertSystem : ExpertSystem = new ExpertSystem();
 		
+		public static const PLAYER_START:int	= 1;
+		public static const PLAYER_MIDDLE:int	= 2;
+		public static const PLAYER_END:int		= 3;
+		
+		private var playerPosition:int;
+		
 		public static const FactA:Fact = new Fact("A");
 		public static const FactB:Fact = new Fact("B");
 		public static const FactC:Fact = new Fact("C");
@@ -144,6 +150,83 @@
 			listeTab["j4"] = new Array("int tour", "etatJeu (flop, turn, ...)", "pot", "stack", "action (suivre, relance, ...)", "joueurs actifs");
 			
 			
+			// ******************************************* BASE DE FAITS *****************************************
+			
+			// Evenement de la manche
+			expertSystem.GetFactBase().AddFact (new Fact ("Preflop"));
+			expertSystem.GetFactBase().AddFact (new Fact ("Flop"));
+			expertSystem.GetFactBase().AddFact (new Fact ("Turn"));
+			expertSystem.GetFactBase().AddFact (new Fact ("River"));
+			
+			// Pot du joueur
+			expertSystem.GetFactBase().AddFact (new Fact ("Pot Haut"));
+			expertSystem.GetFactBase().AddFact (new Fact ("Pot Moyen"));
+			expertSystem.GetFactBase().AddFact (new Fact ("Pot Bas"));
+			
+			// Nombre de joueurs actifs sur la manche
+			expertSystem.GetFactBase().AddFact (new Fact ("Deux joueurs"));
+			expertSystem.GetFactBase().AddFact (new Fact ("Trois joueurs"));
+			expertSystem.GetFactBase().AddFact (new Fact ("Quatre joueurs"));
+			
+			// Valeurs calculées pour le preflop
+			expertSystem.GetFactBase().AddFact (new Fact ("Jouer toute position"));
+			expertSystem.GetFactBase().AddFact (new Fact ("Jouer milieu ou fin parole"));
+			expertSystem.GetFactBase().AddFact (new Fact ("Jouer fin de parole seulement"));
+			expertSystem.GetFactBase().AddFact (new Fact ("Ne pas jouer"));
+			
+			// Position du joueur
+			expertSystem.GetFactBase().AddFact (new Fact ("Debut de parole"));
+			expertSystem.GetFactBase().AddFact (new Fact ("Milieu de parole"));
+			expertSystem.GetFactBase().AddFact (new Fact ("Fin de parole"));
+			
+			// Action du joueur
+			expertSystem.GetFactBase().AddFact (new Fact ("Se coucher"));
+			expertSystem.GetFactBase().AddFact (new Fact ("Checker"));
+			expertSystem.GetFactBase().AddFact (new Fact ("Suivre"));
+			expertSystem.GetFactBase().AddFact (new Fact ("Relancer"));
+			
+			//Valeur maximum de la main
+			expertSystem.GetFactBase().AddFact (new Fact ("Haute carte"));
+			expertSystem.GetFactBase().AddFact (new Fact ("Paire"));
+			expertSystem.GetFactBase().AddFact (new Fact ("Double paire"));
+			expertSystem.GetFactBase().AddFact (new Fact ("Brelan"));
+			expertSystem.GetFactBase().AddFact (new Fact ("Suite"));
+			expertSystem.GetFactBase().AddFact (new Fact ("Couleur"));
+			expertSystem.GetFactBase().AddFact (new Fact ("Full"));
+			expertSystem.GetFactBase().AddFact (new Fact ("Carre"));
+			expertSystem.GetFactBase().AddFact (new Fact ("Quinte flush"));
+			
+			// Position de la main vis a vis des possibilités générales
+			expertSystem.GetFactBase().AddFact (new Fact ("Partie Plus Haute"));
+			expertSystem.GetFactBase().AddFact (new Fact ("Partie Haute"));
+			expertSystem.GetFactBase().AddFact (new Fact ("Partie Basse"));
+			expertSystem.GetFactBase().AddFact (new Fact ("Partie Plus Basse"));
+			
+			
+			// ******************************************* BASE DE REGLES *****************************************
+			
+			
+			// ****************** PREFLOP ****************
+			
+			expertSystem.GetRuleBase().AddRule(new Rule ("Se coucher", 	new Array("Preflop", "Ne pas jouer"))); // ajout si besoin de relancer ou suivre
+			expertSystem.GetRuleBase().AddRule(new Rule ("Checker", 	new Array("Preflop", "Ne pas jouer"))); // ajout si besoin de relancer ou suivre
+			
+			// Trouver fait differenciant le suivre du relancer (aggressivité, random ?, ...)
+			expertSystem.GetRuleBase().AddRule(new Rule ("Suivre", 		new Array("Preflop", "Jouer milieu ou fin parole", "Milieu de parole")));
+			expertSystem.GetRuleBase().AddRule(new Rule ("Suivre", 		new Array("Preflop", "Jouer milieu ou fin parole", "Fin de parole")));
+			expertSystem.GetRuleBase().AddRule(new Rule ("Relancer", 	new Array("Preflop", "Jouer milieu ou fin parole", "Milieu de parole")));
+			expertSystem.GetRuleBase().AddRule(new Rule ("Relancer", 	new Array("Preflop", "Jouer milieu ou fin parole", "Fin de parole")));
+			
+			// Trouver fait differenciant le suivre du relancer (aggressivité, random ?, ...)
+			expertSystem.GetRuleBase().AddRule(new Rule ("Suivre", 		new Array("Preflop", "Jouer fin de parole seulement", "Fin de parole")));
+			expertSystem.GetRuleBase().AddRule(new Rule ("Relancer", 	new Array("Preflop", "Jouer fin de parole seulement", "Fin de parole")));
+			
+			
+			// ****************** FLOP ****************
+			
+			
+			
+			
 			
 			expertSystem.InferForward();
 			var inferedFacts:Array = expertSystem.GetInferedFacts();
@@ -181,7 +264,8 @@
 		
 		public override function ProcessPreflopStart(_pokerTable:PokerTable) : void
 		{
-			
+			CalculPlayerPosition (_pokerTable);
+			trace ("position = " + playerPosition);
 		}
 		
 		public override function ProcessFlopStart(_pokerTable:PokerTable) : void
@@ -237,6 +321,19 @@
 		private function GetMin(premiereCarte:PlayingCard, deuxiemeCarte:PlayingCard):int 
 		{
 			return (premiereCarte.GetHeight() > deuxiemeCarte.GetHeight())?deuxiemeCarte.GetHeight():premiereCarte.GetHeight();
+		}
+		
+		private function CalculPlayerPosition (_pokerTable:PokerTable) : void {
+			var lastPlayerToTalkIndex:int 	= (_pokerTable.GetPlayerIndex(_pokerTable.GetDealer()) + 2) % _pokerTable.PLAYERS_COUNT;
+			var firstPlayerToTalkIndex:int 	= _pokerTable.GetPlayerIndex(_pokerTable.GetDealer());
+			
+			if (_pokerTable.GetPlayerIndex(this) == lastPlayerToTalkIndex) {
+				playerPosition = PLAYER_END;
+			}
+			else if (_pokerTable.GetPlayerIndex(this) == lastPlayerToTalkIndex) 
+				playerPosition = PLAYER_START;
+			else
+				playerPosition = PLAYER_MIDDLE;
 		}
 	}
 }
