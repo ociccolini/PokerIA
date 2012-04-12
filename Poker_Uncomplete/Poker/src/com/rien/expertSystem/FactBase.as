@@ -28,7 +28,7 @@
 		
 		// Valeurs calculées pour le preflop
 		public static const JOUER_TOUT_TEMPS:Fact 	= new Fact ("Jouer toute position");
-		public static const JOUER_MILIEU_OU_FIN:Fact = new Fact ("Jouer milieu ou fin parole");
+		public static const JOUER_MILIEU_OU_FIN:Fact= new Fact ("Jouer milieu ou fin parole");
 		public static const JOUER_FIN:Fact 			= new Fact ("Jouer fin de parole seulement");
 		public static const JOUER_JAMAIS:Fact 		= new Fact ("Ne pas jouer");
 		

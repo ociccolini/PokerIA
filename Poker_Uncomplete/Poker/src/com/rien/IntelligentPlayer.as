@@ -153,6 +153,7 @@
 		public override function ProcessFlopStart(_pokerTable:PokerTable) : void
 		{
 			expertSystem.SetFactValue(FactBase.EVENT_FLOP, true);
+			SetFaitPositionMain (_pokerTable);
 		}
 
 		public override function ProcessTurnStart(_pokerTable:PokerTable) : void
@@ -163,6 +164,7 @@
 		public override function ProcessRiverStart(_pokerTable:PokerTable) : void
 		{
 			expertSystem.SetFactValue(FactBase.EVENT_RIVER, true);
+			SetFaitPositionMain (_pokerTable);
 		}
 
 		public override function ProcessHandEnd(_pokerTable:PokerTable) : void
@@ -207,15 +209,63 @@
 		
 		// METHODES AJOUTEES
 		
+		private function SetFaitPositionMain (_pokerTable:PokerTable) : void
+		{
+			var valeursPossibles:int 		= RenvoieListeValeursMainsPossibles().length();
+			var positionMain:int 			= RetournePositionMain (_pokerTable);
+			var pourcentage:Number			= (positionMain * 100) / valeursPossibles;
+			if (pourcentage < 25)
+			{
+				expertSystem.SetFactValue(FactBase.PARTIE_TRES_BASSE, true);
+			}
+			else if (pourcentage < 50)
+			{
+				expertSystem.SetFactValue(FactBase.PARTIE_BASSE, true);
+			}
+			else if (pourcentage < 75)
+			{
+				expertSystem.SetFactValue(FactBase.PARTIE_HAUTE, true);
+			}
+			else
+			{
+				expertSystem.SetFactValue(FactBase.PARTIE_TRES_HAUTE, true);
+			}
+			
+			
+		}
 		
 		// Methode permettant de situer notre main par rapport a l'ensemble des mains possibles, calculé avec les cartes visibles.
-		// Voir avec DECK qui contient toutes les cartes qui ne sont pas encore sorties (paquet de cartes);
 		private function RetournePositionMain (_pokerTable:PokerTable) : int
 		{
-			var tabCartesConnues:Array 	= new Array();
-			tabCartesConnues 			= _pokerTable.GetBoard();
+			var tabCartesMain:Array		= new Array();
+			var tabValeurRetour:Array;
+			var valeurMain:int			= 0;
+			var position:int 			= 0;
+			
+			// Recupere la valeur de notre main
+			tabCartesMain 				= _pokerTable.GetBoard();
+			tabCartesMain.push(hand[0]);
+			tabCartesMain.push(hand[1]);
+			valeurMain					= PokerTools.GetCardSetValue(tabCartesMain)
+			
+			// Recupere l'ensemble des autres mains possibles, en fonction des cartes inconnues
+			tabValeurRetour 			= RenvoieListeValeursMainsPossibles();
+			
+			// Compare la position de notre main par rapport à toutes celles possibles et renvoie notre position
+			for each(var valeurCarte:int in tabValeurRetour)
+			{
+				if (valeurCarte < valeurMain)
+				{
+					position++;
+				}
+			}
+			return position;
+		}
+		
+		private function RenvoieListeValeursMainsPossibles() : Array 
+		{
 			var tabValeurRetour:Array 	= new Array();
-			var tabCartesDeck:Array 	= new Array();	
+			var tabCartesBoard:Array 	= new Array();
 			
 			for (var couleur = 0; couleur < Suit.COUNT; couleur++)
 			{
@@ -228,33 +278,27 @@
 							// Permet de ne pas avoir 2 fois les memes combinaisons (As coeur et 2 pique, puis 2 pique et As coeur)
 							if (couleurBis <= couleur && valeurCarteBis < valeurCarte)
 							{
-								tabCartesDeck = _pokerTable.GetDeck();
+								tabCartesBoard = _pokerTable.GetBoard();
 								// Ne traite pas les cartes présentes dans la main ni celles du flop / river / turn
 								if (!EstExclue(couleur, valeurCarte, tabCartesDeck) && !EstExclue(couleurBis, valeurCarteBis, tabCartesDeck))
 								{
-									tabCartesDeck.push(new PlayingCard (couleur, valeurCarte));
-									tabCartesDeck.push(new PlayingCard (couleurBis, valeurCarteBis));
-									tabValeurRetour.push(PokerTools.GetCardSetValue(tabCartesDeck));
+									tabCartesBoard.push(new PlayingCard (couleur, valeurCarte));
+									tabCartesBoard.push(new PlayingCard (couleurBis, valeurCarteBis));
+									tabValeurRetour.push(PokerTools.GetCardSetValue(tabCartesBoard));
 								}
 							}
 						}
 					}
 				}
 			}
-			
-			
-			
-			if (expertSystem.GetFactBase().GetFactValue(FactBase.EVENT_RIVER))
-			{
-				
-			}
+			return tabValeurRetour;
 		}
 		
-		private function EstExclue(couleur:int, valeurCarte:int, tabCartesDeck:Array) : Boolean
+		private function EstExclue(couleur:int, valeurCarte:int, tabCartesBoard:Array) : Boolean
 		{
 			var bool:Boolean = false;
 			// Compare aux cartes du flop / river / turn
-			for each (var carte:PlayingCard in tabCartesDeck)
+			for each (var carte:PlayingCard in tabCartesBoard)
 			{
 				if (carte.GetSuit() == couleur && carte.GetHeight() == valeurCarte)
 				{
@@ -262,13 +306,12 @@
 				}
 			}
 			// Compare aux cartes de la main
-			for (var numCarte = 0; numCarte < 2; numCarte++)
+			if (	(hand[0].GetSuit() == couleur && hand[0].GetHeight() == valeurCarte)
+				|| 	(hand[1].GetSuit() == couleur && hand[1].GetHeight() == valeurCarte))
 			{
-				if (GetCard(numCarte).GetSuit() == couleur && GetCard(numCarte).GetHeight() == valeurCarte)
-				{
-					bool = true;
-				}
+				bool = true;
 			}
+			
 			return bool;
 		}
 		
