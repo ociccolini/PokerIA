@@ -1,10 +1,6 @@
 ﻿package com.rien 
 {
-	import com.novabox.playingCards.PlayingCard;
-	import com.novabox.poker.PokerPlayer;
-	import com.novabox.poker.PokerTable;
-	import com.novabox.poker.PokerTools;
-	import com.novabox.poker.PokerAction;
+	import com.novabox.poker.*;
 	import flash.media.Video;
 	import flash.net.FileReferenceList;
 	import com.rien.expertSystem.*;
@@ -96,14 +92,18 @@
 				}
 			}*/
 			
-			//perception();
+			perception();
 			analyse();
-			
+			action();
 			return (lastAction != PokerAction.NONE);
 		}
 		
 		public function perception() : void {
-			
+			// Calcul du pot
+			// nombre de joueurs actifs dans la manche
+			// Position du joueur
+			SetFaitValeurMain ();
+			expertSystem.SetFactValue(GetIntuition());
 		}
 		
 		public function analyse() : void {
@@ -127,7 +127,18 @@
 		}
 		
 		public function action() : void {
+			// Recupere le ou les faits finaux (normalement un seul)
+			var tabFaitsFinaux:Array = expertSystem.GetFinalFacts();
+			if (tabFaitsFinaux [0] == FactBase.EVENT_COUCHER) 	Fold ();
+			if (tabFaitsFinaux [0] == FactBase.EVENT_CHECK) 	Check ();
+			if (tabFaitsFinaux [0] == FactBase.EVENT_SUIVRE) 	Call (_pokerTable.GetValueToCall());
+			// Voir que relancer
+			if (tabFaitsFinaux [0] == FactBase.EVENT_RELANCER) 	Raise(Math.floor(stackValue * Math.random() / 2), _pokerTable.GetValueToCall());
+			// Voir comment trouver le pot
+			if (tabFaitsFinaux [0] == FactBase.EVENT_RELANCER) 	Raise(1000000000000, _pokerTable.GetValueToCall());
 			
+			// Effectue l'action en conséquence
+			// Pour la relance, définir une regle pour savoir de combien on relance
 		}
 		
 		
@@ -212,7 +223,7 @@
 		
 		private function SetFaitPositionMain (_pokerTable:PokerTable) : void
 		{
-			var valeursPossibles:int 		= RenvoieListeValeursMainsPossibles().length();
+			var valeursPossibles:int 		= RenvoieListeValeursMainsPossibles(_pokerTable).length();
 			var positionMain:int 			= RetournePositionMain (_pokerTable);
 			var pourcentage:Number			= (positionMain * 100) / valeursPossibles;
 			if (pourcentage < 25)
@@ -235,22 +246,41 @@
 			
 		}
 		
-		// Methode permettant de situer notre main par rapport a l'ensemble des mains possibles, calculé avec les cartes visibles.
-		private function RetournePositionMain (_pokerTable:PokerTable) : int
+		// Recupere la valeur de notre main
+		private function SetFaitValeurMain () : void
+		{
+			var valeurMain:int = PokerTools.GetHandValue (RetourneValeurIntMain ());
+			
+			if (valeurMain == HandValue.HIGH_CARD) 			expertSystem.SetFactValue(FactBase.HAND_HAUTE_MAIN, 	true);
+			if (valeurMain == HandValue.PAIR) 				expertSystem.SetFactValue(FactBase.HAND_PAIRE, 			true);
+			if (valeurMain == HandValue.TWO_PAIRS) 			expertSystem.SetFactValue(FactBase.HAND_DOUBLE_PAIRE, 	true);
+			if (valeurMain == HandValue.THREE_OF_A_KIND) 	expertSystem.SetFactValue(FactBase.HAND_BRELAN, 		true);
+			if (valeurMain == HandValue.STRAIGHT) 			expertSystem.SetFactValue(FactBase.HAND_SUITE, 			true);
+			if (valeurMain == HandValue.FLUSH)	 			expertSystem.SetFactValue(FactBase.HAND_COULEUR, 		true);
+			if (valeurMain == HandValue.FULL_HOUSE) 		expertSystem.SetFactValue(FactBase.HAND_FULL, 			true);
+			if (valeurMain == HandValue.FOUR_OF_A_KIND) 	expertSystem.SetFactValue(FactBase.HAND_CARRE, 			true);
+			if (valeurMain == HandValue.STRAIGHT_FLUSH) 	expertSystem.SetFactValue(FactBase.HAND_QUINTE_FLUSH, 	true);
+			return null;
+		}
+		
+		private function RetourneValeurIntMain () : int
 		{
 			var tabCartesMain:Array		= new Array();
-			var tabValeurRetour:Array;
-			var valeurMain:int			= 0;
-			var position:int 			= 0;
-			
-			// Recupere la valeur de notre main
 			tabCartesMain 				= _pokerTable.GetBoard();
 			tabCartesMain.push(hand[0]);
 			tabCartesMain.push(hand[1]);
-			valeurMain					= PokerTools.GetCardSetValue(tabCartesMain)
+			return PokerTools.GetCardSetValue(tabCartesMain);
+		}
+		
+		// Methode permettant de situer notre main par rapport a l'ensemble des mains possibles, calculé avec les cartes visibles.
+		private function RetournePositionMain (_pokerTable:PokerTable) : int
+		{
+			var tabValeurRetour:Array;
+			var valeurMain:int			= RetourneValeurIntMain ();
+			var position:int 			= 0;
 			
 			// Recupere l'ensemble des autres mains possibles, en fonction des cartes inconnues
-			tabValeurRetour 			= RenvoieListeValeursMainsPossibles();
+			tabValeurRetour 			= RenvoieListeValeursMainsPossibles(_pokerTable);
 			
 			// Compare la position de notre main par rapport à toutes celles possibles et renvoie notre position
 			for each(var valeurCarte:int in tabValeurRetour)
@@ -263,7 +293,7 @@
 			return position;
 		}
 		
-		private function RenvoieListeValeursMainsPossibles() : Array 
+		private function RenvoieListeValeursMainsPossibles(_pokerTable:PokerTable) : Array 
 		{
 			var tabValeurRetour:Array 	= new Array();
 			var tabCartesBoard:Array 	= new Array();
@@ -281,7 +311,7 @@
 							{
 								tabCartesBoard = _pokerTable.GetBoard();
 								// Ne traite pas les cartes présentes dans la main ni celles du flop / river / turn
-								if (!EstExclue(couleur, valeurCarte, tabCartesDeck) && !EstExclue(couleurBis, valeurCarteBis, tabCartesDeck))
+								if (!EstExclue(couleur, valeurCarte, tabCartesBoard) && !EstExclue(couleurBis, valeurCarteBis, tabCartesBoard))
 								{
 									tabCartesBoard.push(new PlayingCard (couleur, valeurCarte));
 									tabCartesBoard.push(new PlayingCard (couleurBis, valeurCarteBis));
@@ -336,30 +366,30 @@
 			return probabilite;
 		}
 		
-		private function GetIntuition () : String
+		private function GetIntuition () : Fact
 		{
 			var random:int = (Math.random() * 4) + 1;
 			trace ("valeur intuition = " + random);
 			switch (random)
 			{
-				case 1 :
-					return "Intuition tres faible";
-					break;
-				case 2 :
-					return "Intuition faible";
-					break;
-				case 3 :
-					return "Intuition forte";
-					break;
-				default : 
-					return "Intuition tres forte"
-					break;
+			case 1 :
+				return FactBase.INTUITION_TRES_FAIBLE;
+				break;
+			case 2 :
+				return FactBase.INTUITION_FAIBLE;
+				break;
+			case 3 :
+				return FactBase.INTUITION_FORTE;
+				break;
+			default : 
+				return FactBase.INTUITION_TRES_FORTE;
+				break;
 			}
 		}
 		
 		private function CalculPlayerPosition (_pokerTable:PokerTable) : void {
-			var lastPlayerToTalkIndex:int 	= (_pokerTable.GetPlayerIndex(_pokerTable.GetDealer()) + 2) % _pokerTable.PLAYERS_COUNT;
-			var firstPlayerToTalkIndex:int 	= _pokerTable.GetPlayerIndex(_pokerTable.GetDealer());
+			//var lastPlayerToTalkIndex:int 	= (_pokerTable.GetPlayerIndex(_pokerTable.GetDealer()) + 2) % _pokerTable.PLAYERS_COUNT;
+			/*var firstPlayerToTalkIndex:int 	= _pokerTable.GetPlayerIndex(_pokerTable.GetDealer());
 			
 			if (_pokerTable.GetPlayerIndex(this) == lastPlayerToTalkIndex) {
 				playerPosition = PLAYER_END;
@@ -367,7 +397,7 @@
 			else if (_pokerTable.GetPlayerIndex(this) == lastPlayerToTalkIndex) 
 				playerPosition = PLAYER_START;
 			else
-				playerPosition = PLAYER_MIDDLE;
+				playerPosition = PLAYER_MIDDLE;*/
 		}
 		
 		private function DefinirActionJoueurPreflop():void 
