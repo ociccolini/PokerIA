@@ -96,9 +96,8 @@
 				}
 			}*/
 			
-			trace("-> " + CalculProbabilite());
 			//perception();
-			//analyse();
+			analyse();
 			
 			return (lastAction != PokerAction.NONE);
 		}
@@ -146,8 +145,10 @@
 		public override function ProcessPreflopStart(_pokerTable:PokerTable) : void
 		{
 			expertSystem.SetFactValue(FactBase.EVENT_PREFLOP, true);
+			DefinirActionJoueurPreflop();
 			CalculPlayerPosition (_pokerTable);
-			trace ("position = " + playerPosition);
+			
+			trace ("position = " + playerPosition + " - probabilité preflop = " + CalculProbabilitePreflop());
 		}
 		
 		public override function ProcessFlopStart(_pokerTable:PokerTable) : void
@@ -315,7 +316,7 @@
 			return bool;
 		}
 		
-		public function CalculProbabilite() : int
+		public function CalculProbabilitePreflop() : int
 		{
 			var premiereCarte:PlayingCard = hand[0];
 			var deuxiemeCarte:PlayingCard = hand[1];
@@ -367,6 +368,21 @@
 				playerPosition = PLAYER_START;
 			else
 				playerPosition = PLAYER_MIDDLE;
+		}
+		
+		private function DefinirActionJoueurPreflop():void 
+		{
+			switch(CalculProbabilitePreflop())
+			{
+				case 0 :	expertSystem.SetFactValue(FactBase.JOUER_JAMAIS, true);
+							break;
+				case 1 :	expertSystem.SetFactValue(FactBase.JOUER_FIN, true);
+							break;
+				case 2 :	expertSystem.SetFactValue(FactBase.JOUER_MILIEU_OU_FIN, true);
+							break;
+				case 3 :	expertSystem.SetFactValue(FactBase.JOUER_TOUT_TEMPS, true);
+							break;
+			}
 		}
 	}
 }
