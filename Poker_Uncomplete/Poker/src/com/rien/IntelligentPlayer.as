@@ -92,18 +92,18 @@
 				}
 			}*/
 			
-			perception();
+			perception(_pokerTable);
 			analyse();
-			action();
+			action(_pokerTable);
 			return (lastAction != PokerAction.NONE);
 		}
 		
-		public function perception() : void {
+		public function perception(_pokerTable:PokerTable) : void {
 			// Calcul du pot
 			// nombre de joueurs actifs dans la manche
 			// Position du joueur
-			SetFaitValeurMain ();
-			expertSystem.SetFactValue(GetIntuition());
+			SetFaitValeurMain (_pokerTable);
+			expertSystem.SetFactValue(GetIntuition(), true);
 		}
 		
 		public function analyse() : void {
@@ -126,7 +126,7 @@
 			}
 		}
 		
-		public function action() : void {
+		public function action(_pokerTable:PokerTable) : void {
 			// Recupere le ou les faits finaux (normalement un seul)
 			var tabFaitsFinaux:Array = expertSystem.GetFinalFacts();
 			if (tabFaitsFinaux [0] == FactBase.EVENT_COUCHER) 	Fold ();
@@ -223,7 +223,7 @@
 		
 		private function SetFaitPositionMain (_pokerTable:PokerTable) : void
 		{
-			var valeursPossibles:int 		= RenvoieListeValeursMainsPossibles(_pokerTable).length();
+			var valeursPossibles:int 		= RenvoieListeValeursMainsPossibles(_pokerTable).length;
 			var positionMain:int 			= RetournePositionMain (_pokerTable);
 			var pourcentage:Number			= (positionMain * 100) / valeursPossibles;
 			if (pourcentage < 25)
@@ -247,9 +247,9 @@
 		}
 		
 		// Recupere la valeur de notre main
-		private function SetFaitValeurMain () : void
+		private function SetFaitValeurMain (_pokerTable:PokerTable) : void
 		{
-			var valeurMain:int = PokerTools.GetHandValue (RetourneValeurIntMain ());
+			var valeurMain:int = PokerTools.GetHandValue (RetourneValeurIntMain (_pokerTable));
 			
 			if (valeurMain == HandValue.HIGH_CARD) 			expertSystem.SetFactValue(FactBase.HAND_HAUTE_MAIN, 	true);
 			if (valeurMain == HandValue.PAIR) 				expertSystem.SetFactValue(FactBase.HAND_PAIRE, 			true);
@@ -260,10 +260,10 @@
 			if (valeurMain == HandValue.FULL_HOUSE) 		expertSystem.SetFactValue(FactBase.HAND_FULL, 			true);
 			if (valeurMain == HandValue.FOUR_OF_A_KIND) 	expertSystem.SetFactValue(FactBase.HAND_CARRE, 			true);
 			if (valeurMain == HandValue.STRAIGHT_FLUSH) 	expertSystem.SetFactValue(FactBase.HAND_QUINTE_FLUSH, 	true);
-			return null;
+			//return null;
 		}
 		
-		private function RetourneValeurIntMain () : int
+		private function RetourneValeurIntMain (_pokerTable:PokerTable) : int
 		{
 			var tabCartesMain:Array		= new Array();
 			tabCartesMain 				= _pokerTable.GetBoard();
@@ -276,7 +276,7 @@
 		private function RetournePositionMain (_pokerTable:PokerTable) : int
 		{
 			var tabValeurRetour:Array;
-			var valeurMain:int			= RetourneValeurIntMain ();
+			var valeurMain:int			= RetourneValeurIntMain (_pokerTable);
 			var position:int 			= 0;
 			
 			// Recupere l'ensemble des autres mains possibles, en fonction des cartes inconnues

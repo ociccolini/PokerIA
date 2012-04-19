@@ -29,7 +29,7 @@
 			
 			// ****************** FLOP ****************
 			
-			AddRule(new Rule (FactBase.EVENT_COUCHER, 	new Array(FactBase.EVENT_FLOP, FactBase., FactBase.PAROLE_FIN)));
+			AddRule(new Rule (FactBase.EVENT_COUCHER, 	new Array(FactBase.EVENT_FLOP, FactBase.JOUER_FIN, FactBase.PAROLE_FIN)));
 			AddRule(new Rule (FactBase.EVENT_RELANCER, 	new Array(FactBase.EVENT_FLOP, FactBase.JOUER_FIN, FactBase.PAROLE_FIN)));
 			AddRule(new Rule (FactBase.EVENT_SUIVRE, 	new Array(FactBase.EVENT_FLOP, FactBase.JOUER_FIN, FactBase.PAROLE_FIN)));
 			AddRule(new Rule (FactBase.EVENT_RELANCER, 	new Array(FactBase.EVENT_FLOP, FactBase.JOUER_FIN, FactBase.PAROLE_FIN)));
