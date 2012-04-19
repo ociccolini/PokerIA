@@ -33,6 +33,7 @@
 			}
 			else
 			{
+				trace("nb cartes : " + intArray.length);
 				trace("Warning : invalid cardset size");
 				result = evaluator.eval_7cards(intArray);	
 			}

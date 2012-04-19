@@ -103,26 +103,26 @@
 			// nombre de joueurs actifs dans la manche
 			// Position du joueur
 			SetFaitValeurMain (_pokerTable);
-			expertSystem.SetFactValue(GetIntuition(), true);
+			expertSystem.SetFactValue(GetIntuition(), false); // rajout du booleen true par défautl
 		}
 		
 		public function analyse() : void {
 
 			expertSystem.InferForward();
 			var inferedFacts:Array = expertSystem.GetInferedFacts();
-			trace("Infered Facts:");
+			//trace("Infered Facts:");
 			for each(var inferedFact:Fact in inferedFacts)
 			{
-				trace(inferedFact.GetLabel());
+				//trace(inferedFact.GetLabel());
 			}
 
 			expertSystem.ResetFacts();
 			expertSystem.InferBackward();
 			var factsToAsk:Array = expertSystem.GetFactsToAsk();
-			trace("Facts to ask :");
+			//trace("Facts to ask :");
 			for each(var factToAsk:Fact in factsToAsk)
 			{
-				trace(factToAsk.GetLabel());
+				//trace(factToAsk.GetLabel());
 			}
 		}
 		
@@ -224,6 +224,7 @@
 		private function SetFaitPositionMain (_pokerTable:PokerTable) : void
 		{
 			var valeursPossibles:int 		= RenvoieListeValeursMainsPossibles(_pokerTable).length;
+			trace("valeur possible : " + valeursPossibles);
 			var positionMain:int 			= RetournePositionMain (_pokerTable);
 			var pourcentage:Number			= (positionMain * 100) / valeursPossibles;
 			if (pourcentage < 25)
@@ -266,10 +267,14 @@
 		private function RetourneValeurIntMain (_pokerTable:PokerTable) : int
 		{
 			var tabCartesMain:Array		= new Array();
+			var tabCartesMainBis:Array		= new Array();
 			tabCartesMain 				= _pokerTable.GetBoard();
-			tabCartesMain.push(hand[0]);
-			tabCartesMain.push(hand[1]);
-			return PokerTools.GetCardSetValue(tabCartesMain);
+			for each(var c:PlayingCard in tabCartesMain) {
+				tabCartesMainBis.push(c);
+			}
+			tabCartesMainBis.push(hand[0]);
+			tabCartesMainBis.push(hand[1]);
+			return PokerTools.GetCardSetValue(tabCartesMainBis);
 		}
 		
 		// Methode permettant de situer notre main par rapport a l'ensemble des mains possibles, calculé avec les cartes visibles.
@@ -297,6 +302,12 @@
 		{
 			var tabValeurRetour:Array 	= new Array();
 			var tabCartesBoard:Array 	= new Array();
+			var tabCartesBoardBis:Array 	= new Array();
+			
+			tabCartesBoard = _pokerTable.GetBoard(); // tabCartesBoard est un pointeur vers la table ... 
+			for each(var c:PlayingCard in tabCartesBoard) {
+				tabCartesBoardBis.push(c);
+			}
 			
 			for (var couleur = 0; couleur < Suit.COUNT; couleur++)
 			{
@@ -309,13 +320,20 @@
 							// Permet de ne pas avoir 2 fois les memes combinaisons (As coeur et 2 pique, puis 2 pique et As coeur)
 							if (couleurBis <= couleur && valeurCarteBis < valeurCarte)
 							{
-								tabCartesBoard = _pokerTable.GetBoard();
 								// Ne traite pas les cartes présentes dans la main ni celles du flop / river / turn
 								if (!EstExclue(couleur, valeurCarte, tabCartesBoard) && !EstExclue(couleurBis, valeurCarteBis, tabCartesBoard))
 								{
-									tabCartesBoard.push(new PlayingCard (couleur, valeurCarte));
-									tabCartesBoard.push(new PlayingCard (couleurBis, valeurCarteBis));
-									tabValeurRetour.push(PokerTools.GetCardSetValue(tabCartesBoard));
+									tabCartesBoardBis.push(new PlayingCard (couleur, valeurCarte));
+									tabCartesBoardBis.push(new PlayingCard (couleurBis, valeurCarteBis));
+									tabValeurRetour.push(PokerTools.GetCardSetValue(tabCartesBoardBis));
+									
+									// Pour les test, evite de perdre un temps fou à instancier 1500 cartes, 
+									// Vivien il faut valider que tu veux bien autant de carte si oui dans ce cas là
+									// quand tu test le resultat il ne faut passer que 5 ou 7 cartes à la methode GetCardSetValue 
+									// (appelé par la méthode qui reçoit le resultat renvoyé ci-dessous).
+									if (tabValeurRetour.length > 7) {
+										return tabValeurRetour;
+									}
 								}
 							}
 						}
