@@ -1,6 +1,6 @@
-bin/*
-lib/*
-obj/*
+﻿bin
+lib
+obj
 *.swf
 *.js
 *.old
