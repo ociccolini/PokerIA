@@ -1,0 +1,10 @@
+bin/*
+lib/*
+obj/*
+*.swf
+*.js
+*.old
+*.xml
+*.fla
+*.html
+*.swc
