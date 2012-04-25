@@ -129,6 +129,7 @@
 		public function action(_pokerTable:PokerTable) : void {
 			// Recupere le ou les faits finaux (normalement un seul)
 			var tabFaitsFinaux:Array = expertSystem.GetFinalFacts();
+			//trace("-> " + tabFaitsFinaux [0]);
 			if (tabFaitsFinaux [0] == FactBase.EVENT_COUCHER) 	Fold ();
 			if (tabFaitsFinaux [0] == FactBase.EVENT_CHECK) 	Check ();
 			if (tabFaitsFinaux [0] == FactBase.EVENT_SUIVRE) 	Call (_pokerTable.GetValueToCall());
@@ -309,13 +310,13 @@
 				tabCartesBoardBis.push(c);
 			}
 			
-			for (var couleur = 0; couleur < Suit.COUNT; couleur++)
+			for (var couleur:int = 0; couleur < Suit.COUNT; couleur++)
 			{
-				for (var valeurCarte = 0; valeurCarte < Height.COUNT; valeurCarte++)
+				for (var valeurCarte:int = 0; valeurCarte < Height.COUNT; valeurCarte++)
 				{
-					for (var couleurBis = 0; couleurBis < Suit.COUNT; couleurBis++)
+					for (var couleurBis:int = 0; couleurBis < Suit.COUNT; couleurBis++)
 					{
-						for (var valeurCarteBis = 0; valeurCarteBis < Height.COUNT; valeurCarteBis++)
+						for (var valeurCarteBis:int = 0; valeurCarteBis < Height.COUNT; valeurCarteBis++)
 						{
 							// Permet de ne pas avoir 2 fois les memes combinaisons (As coeur et 2 pique, puis 2 pique et As coeur)
 							if (couleurBis <= couleur && valeurCarteBis < valeurCarte)
@@ -377,8 +378,6 @@
 			else 
 			{
 				probabilite = tableauProbabiliteCartesDepareillesPreflop[GetMin(premiereCarte, deuxiemeCarte)][GetMax(premiereCarte, deuxiemeCarte) - 1];
-				trace("ligne:" + GetMin(premiereCarte, deuxiemeCarte));
-				trace("colonne:" + (GetMax(premiereCarte, deuxiemeCarte)-1));
 			}
 			
 			return probabilite;
