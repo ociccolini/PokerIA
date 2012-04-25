@@ -100,9 +100,13 @@
 		
 		public function perception(_pokerTable:PokerTable) : void {
 			// Calcul du pot
+			
+			
 			// nombre de joueurs actifs dans la manche
-			SetJoueursRestant();
+			SetJoueursRestant(_pokerTable);
+			
 			// Position du joueur
+			
 			SetFaitValeurMain (_pokerTable);
 			expertSystem.SetFactValue(GetIntuition(), false); // rajout du booleen true par défautl
 		}
@@ -150,7 +154,7 @@
 			
 		}
 		
-		public function ProcessBetRoundStart(_pokerTable:PokerTable) : void
+		public override function ProcessBetRoundStart(_pokerTable:PokerTable) : void
 		{
 			SetPositionPlayer(_pokerTable);
 		}
@@ -455,9 +459,9 @@
 				expertSystem.SetFactValue(FactBase.PAROLE_MILIEU, true);
 		}
 		
-		private function SetJoueursRestant():void 
+		private function SetJoueursRestant(_pokerTable:PokerTable):void 
 		{
-			var joueursRestant:int = players.length - GetLostPlayersCount();
+			var joueursRestant:int = PokerTable.PLAYERS_COUNT - _pokerTable.GetLostPlayersCount();
 			
 			if (joueursRestant == 2)
 			{
