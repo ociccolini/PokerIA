@@ -100,12 +100,12 @@
 		
 		public function perception(_pokerTable:PokerTable) : void {
 			// Calcul du stack
-			var joueursRestant:int = PokerTable.PLAYERS_COUNT - _pokerTable.GetLostPlayersCount();
+			/*var joueursRestant:int = PokerTable.PLAYERS_COUNT - _pokerTable.GetLostPlayersCount();
 			for (var i:int = 0; i < joueursRestant; i++)
 			{
 				trace("-> "+i+") "+_pokerTable.GetPlayer(i).GetStackValue());
 			}
-			
+			*/
 			// nombre de joueurs actifs dans la manche
 			SetJoueursRestant(_pokerTable);
 			
@@ -139,14 +139,14 @@
 		public function action(_pokerTable:PokerTable) : void {
 			// Recupere le ou les faits finaux (normalement un seul)
 			var tabFaitsFinaux:Array = expertSystem.GetFinalFacts();
-			//trace("-> " + tabFaitsFinaux [0]);
+			if(tabFaitsFinaux != null) trace("-> " + (tabFaitsFinaux [0] as Fact).GetLabel());
 			if (tabFaitsFinaux [0] == FactBase.EVENT_COUCHER) 	Fold ();
 			if (tabFaitsFinaux [0] == FactBase.EVENT_CHECK) 	Check ();
 			if (tabFaitsFinaux [0] == FactBase.EVENT_SUIVRE) 	Call (_pokerTable.GetValueToCall());
 			// Voir que relancer
 			if (tabFaitsFinaux [0] == FactBase.EVENT_RELANCER) 	Raise(Math.floor(stackValue * Math.random() / 2), _pokerTable.GetValueToCall());
 			// Voir comment trouver le pot
-			if (tabFaitsFinaux [0] == FactBase.EVENT_RELANCER) 	Raise(1000000000000, _pokerTable.GetValueToCall());
+			//if (tabFaitsFinaux [0] == FactBase.EVENT_RELANCER) 	Raise(1000000000000, _pokerTable.GetValueToCall());
 			
 			// Effectue l'action en conséquence
 			// Pour la relance, définir une regle pour savoir de combien on relance

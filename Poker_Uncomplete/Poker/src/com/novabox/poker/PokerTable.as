@@ -21,7 +21,7 @@
 	public class PokerTable extends Automate
 	{
 		public static const PLAYER_HAND_CARDS_COUNT:int	= 2;
-		public static const PLAYERS_COUNT:int			= 5;
+		public static const PLAYERS_COUNT:int			= 4;
 		public static const	PLAYER_INIT_STACK:Number	= 100;
 		
 		public static const BLIND_START_VALUE:Number	= 2;		
