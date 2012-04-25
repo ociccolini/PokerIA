@@ -99,13 +99,18 @@
 		}
 		
 		public function perception(_pokerTable:PokerTable) : void {
-			// Calcul du pot
-			
+			// Calcul du stack
+			var joueursRestant:int = PokerTable.PLAYERS_COUNT - _pokerTable.GetLostPlayersCount();
+			for (var i:int = 0; i < joueursRestant; i++)
+			{
+				trace("-> "+i+") "+_pokerTable.GetPlayer(i).GetStackValue());
+			}
 			
 			// nombre de joueurs actifs dans la manche
 			SetJoueursRestant(_pokerTable);
 			
 			// Position du joueur
+			
 			
 			SetFaitValeurMain (_pokerTable);
 			expertSystem.SetFactValue(GetIntuition(), false); // rajout du booleen true par défautl
@@ -476,5 +481,6 @@
 				expertSystem.SetFactValue(FactBase.JOUEURS_QUATRE, true);
 			}
 		}
+		
 	}
 }

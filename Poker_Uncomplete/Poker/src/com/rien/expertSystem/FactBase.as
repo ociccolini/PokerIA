@@ -17,14 +17,15 @@
 		public static const EVENT_RIVER:Fact 		= new Fact ("River");
 		
 		// Pot du joueur
-		public static const POT_HAUT:Fact 			= new Fact ("Pot Haut");
-		public static const POT_MOYEN:Fact 			= new Fact ("Pot Moyen");
-		public static const POT_BAS:Fact 			= new Fact ("Pot Bas");
+		public static const STACK_HAUT:Fact 		= new Fact ("Stack Haut");
+		public static const STACK_MOYEN:Fact 		= new Fact ("Stack Moyen");
+		public static const STACK_BAS:Fact 			= new Fact ("Stack Bas");
 		
 		// Nombre de joueurs actifs sur la manche
 		public static const JOUEURS_DEUX:Fact 		= new Fact ("Deux joueurs");
 		public static const JOUEURS_TROIS:Fact 		= new Fact ("Trois joueurs");
 		public static const JOUEURS_QUATRE:Fact 	= new Fact ("Quatre joueurs");
+		public static const JOUEURS_CINQETPLUS:Fact = new Fact ("Cinque joueurs et plus");
 		
 		// Valeurs calculées pour le preflop
 		public static const JOUER_TOUT_TEMPS:Fact 	= new Fact ("Jouer toute position");
@@ -82,9 +83,9 @@
 			AddFact (EVENT_TURN);
 			
 			// Pot du joueur
-			AddFact (POT_HAUT);
-			AddFact (POT_MOYEN);
-			AddFact (POT_BAS);
+			AddFact (STACK_HAUT);
+			AddFact (STACK_MOYEN);
+			AddFact (STACK_BAS);
 			
 			// Nombre de joueurs actifs sur la manche
 			AddFact (JOUEURS_DEUX);
