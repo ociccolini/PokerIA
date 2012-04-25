@@ -159,7 +159,6 @@
 		{
 			expertSystem.SetFactValue(FactBase.EVENT_PREFLOP, true);
 			DefinirActionJoueurPreflop();
-			CalculPlayerPosition (_pokerTable);
 			
 			trace ("position = " + playerPosition + " - probabilité preflop = " + CalculProbabilitePreflop());
 		}
@@ -269,14 +268,12 @@
 		private function RetourneValeurIntMain (_pokerTable:PokerTable) : int
 		{
 			var tabCartesMain:Array		= new Array();
-			var tabCartesMainBis:Array		= new Array();
-			tabCartesMain 				= _pokerTable.GetBoard();
-			for each(var c:PlayingCard in tabCartesMain) {
-				tabCartesMainBis.push(c);
-			}
-			tabCartesMainBis.push(hand[0]);
-			tabCartesMainBis.push(hand[1]);
-			return PokerTools.GetCardSetValue(tabCartesMainBis);
+			var tabCartesMainBis:Array	= new Array();
+			tabCartesMain 				= _pokerTable.GetBoard().slice();
+			tabCartesMain.push(hand[0]);
+			tabCartesMain.push(hand[1]);
+			
+			return PokerTools.GetCardSetValue(tabCartesMain);
 		}
 		
 		// Methode permettant de situer notre main par rapport a l'ensemble des mains possibles, calculé avec les cartes visibles.
@@ -304,12 +301,9 @@
 		{
 			var tabValeurRetour:Array 	= new Array();
 			var tabCartesBoard:Array 	= new Array();
-			var tabCartesBoardBis:Array 	= new Array();
+			var tabMainPossible:Array 	= new Array();
 			
-			tabCartesBoard = _pokerTable.GetBoard(); // tabCartesBoard est un pointeur vers la table ... 
-			for each(var c:PlayingCard in tabCartesBoard) {
-				tabCartesBoardBis.push(c);
-			}
+			tabCartesBoard 				= _pokerTable.GetBoard().slice();
 			
 			for (var couleur:int = 0; couleur < Suit.COUNT; couleur++)
 			{
@@ -325,18 +319,77 @@
 								// Ne traite pas les cartes présentes dans la main ni celles du flop / river / turn
 								if (!EstExclue(couleur, valeurCarte, tabCartesBoard) && !EstExclue(couleurBis, valeurCarteBis, tabCartesBoard))
 								{
-									tabCartesBoardBis.push(new PlayingCard (couleur, valeurCarte));
-									tabCartesBoardBis.push(new PlayingCard (couleurBis, valeurCarteBis));
-									tabValeurRetour.push(PokerTools.GetCardSetValue(tabCartesBoardBis));
+									// On reinitialise la main avec le board
+									tabMainPossible = tabCartesBoard.slice();
 									
-									// Pour les test, evite de perdre un temps fou à instancier 1500 cartes, 
-									// Vivien il faut valider que tu veux bien autant de carte si oui dans ce cas là
-									// quand tu test le resultat il ne faut passer que 5 ou 7 cartes à la methode GetCardSetValue 
-									// (appelé par la méthode qui reçoit le resultat renvoyé ci-dessous).
-									if (tabValeurRetour.length > 7) {
-										return tabValeurRetour;
+									// On push les 2 cartes generees
+									tabCartesBoard.push(new PlayingCard (couleur, valeurCarte));
+									tabCartesBoard.push(new PlayingCard (couleurBis, valeurCarteBis));
+									
+									// On recupere sa valeur en int que l'on met dans un tableau
+									tabValeurRetour.push(PokerTools.GetCardSetValue(tabCartesBoard));
+								}
+							}
+						}
+					}
+				}
+			}
+			return tabValeurRetour;
+		}
+		
+		private function RenvoieListeAmeliorationPossible(_pokerTable:PokerTable) : Array 
+		{
+			var tabValeurRetour:Array 	= new Array();
+			var tabCartesBoard:Array 	= new Array();
+			var tabMainPossible:Array 	= new Array();
+			
+			tabCartesBoard 				= _pokerTable.GetBoard().slice();
+			
+			for (var couleur:int = 0; couleur < Suit.COUNT; couleur++)
+			{
+				for (var valeurCarte:int = 0; valeurCarte < Height.COUNT; valeurCarte++)
+				{
+					for (var couleurBis:int = 0; couleurBis < Suit.COUNT; couleurBis++)
+					{
+						
+						// Si on est au flop
+						if (tabCartesBoard.length == 3) 
+						{
+							for (var valeurCarteBis:int = 0; valeurCarteBis < Height.COUNT; valeurCarteBis++)
+							{
+								// Permet de ne pas avoir 2 fois les memes combinaisons (As coeur et 2 pique, puis 2 pique et As coeur)
+								if (couleurBis <= couleur && valeurCarteBis < valeurCarte)
+								{
+									// Ne traite pas les cartes présentes dans la main ni celles du flop / river / turn
+									if (!EstExclue(couleur, valeurCarte, tabCartesBoard) && !EstExclue(couleurBis, valeurCarteBis, tabCartesBoard))
+									{
+										// On reinitialise la main avec le board
+										tabMainPossible = tabCartesBoard.slice();
+										
+										// On push les 2 cartes generees
+										tabCartesBoard.push(new PlayingCard (couleur, valeurCarte));
+										tabCartesBoard.push(new PlayingCard (couleurBis, valeurCarteBis));
+										
+										// On recupere sa valeur en int que l'on met dans un tableau
+										tabValeurRetour.push(PokerTools.GetHandValue(PokerTools.GetCardSetValue(tabCartesBoard)));
 									}
 								}
+							}
+						}
+						// SI on est au turn
+						else if (tabCartesBoard.length == 4) 
+						{
+							// Ne traite pas la cartes présentes dans la main ni celles du flop / river / turn
+							if (!EstExclue(couleur, valeurCarte, tabCartesBoard))
+							{
+								// On reinitialise la main avec le board
+								tabMainPossible = tabCartesBoard.slice();
+								
+								// On push la carte generée
+								tabCartesBoard.push(new PlayingCard (couleur, valeurCarte));
+								
+								// On recupere sa valeur en int que l'on met dans un tableau
+								tabValeurRetour.push(PokerTools.GetHandValue(PokerTools.GetCardSetValue(tabCartesBoard)));
 							}
 						}
 					}
@@ -405,18 +458,6 @@
 			}
 		}
 		
-		private function CalculPlayerPosition (_pokerTable:PokerTable) : void {
-			//var lastPlayerToTalkIndex:int 	= (_pokerTable.GetPlayerIndex(_pokerTable.GetDealer()) + 2) % _pokerTable.PLAYERS_COUNT;
-			/*var firstPlayerToTalkIndex:int 	= _pokerTable.GetPlayerIndex(_pokerTable.GetDealer());
-			
-			if (_pokerTable.GetPlayerIndex(this) == lastPlayerToTalkIndex) {
-				playerPosition = PLAYER_END;
-			}
-			else if (_pokerTable.GetPlayerIndex(this) == lastPlayerToTalkIndex) 
-				playerPosition = PLAYER_START;
-			else
-				playerPosition = PLAYER_MIDDLE;*/
-		}
 		
 		private function DefinirActionJoueurPreflop():void 
 		{
