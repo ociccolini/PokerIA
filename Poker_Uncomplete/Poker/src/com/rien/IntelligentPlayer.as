@@ -101,6 +101,7 @@
 		public function perception(_pokerTable:PokerTable) : void {
 			// Calcul du pot
 			// nombre de joueurs actifs dans la manche
+			SetJoueursRestant();
 			// Position du joueur
 			SetFaitValeurMain (_pokerTable);
 			expertSystem.SetFactValue(GetIntuition(), false); // rajout du booleen true par défautl
@@ -452,6 +453,24 @@
 				expertSystem.SetFactValue(FactBase.PAROLE_FIN, true);
 			else
 				expertSystem.SetFactValue(FactBase.PAROLE_MILIEU, true);
+		}
+		
+		private function SetJoueursRestant():void 
+		{
+			var joueursRestant:int = players.length - GetLostPlayersCount();
+			
+			if (joueursRestant == 2)
+			{
+				expertSystem.SetFactValue(FactBase.JOUEURS_DEUX, true);
+			}
+			else if (joueursRestant == 3)
+			{
+				expertSystem.SetFactValue(FactBase.JOUEURS_TROIS, true);
+			}
+			else if (joueursRestant == 4)
+			{
+				expertSystem.SetFactValue(FactBase.JOUEURS_QUATRE, true);
+			}
 		}
 	}
 }
