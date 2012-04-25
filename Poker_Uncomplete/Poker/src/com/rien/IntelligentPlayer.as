@@ -99,10 +99,19 @@
 		}
 		
 		public function perception(_pokerTable:PokerTable) : void {
-			// Calcul du pot
+			// Calcul du stack
+			var joueursRestant:int = PokerTable.PLAYERS_COUNT - _pokerTable.GetLostPlayersCount();
+			for (var i:int = 0; i < joueursRestant; i++)
+			{
+				trace("-> "+i+") "+_pokerTable.GetPlayer(i).GetStackValue());
+			}
+			
 			// nombre de joueurs actifs dans la manche
-			SetJoueursRestant();
+			SetJoueursRestant(_pokerTable);
+			
 			// Position du joueur
+			
+			
 			SetFaitValeurMain (_pokerTable);
 			expertSystem.SetFactValue(GetIntuition(), false); // rajout du booleen true par défautl
 		}
@@ -150,7 +159,7 @@
 			
 		}
 		
-		public function ProcessBetRoundStart(_pokerTable:PokerTable) : void
+		public override function ProcessBetRoundStart(_pokerTable:PokerTable) : void
 		{
 			SetPositionPlayer(_pokerTable);
 		}
@@ -167,6 +176,11 @@
 		{
 			expertSystem.SetFactValue(FactBase.EVENT_FLOP, true);
 			SetFaitPositionMain (_pokerTable);
+			
+			// Vérifier si il y a des cartes assorties (2 ou 3 de même couleur)
+			// Vérifier si les cartes se suivent
+			// Vérifier si la hauteur des cartes
+			// Vérifier si il y a une paire
 		}
 
 		public override function ProcessTurnStart(_pokerTable:PokerTable) : void
@@ -496,9 +510,9 @@
 				expertSystem.SetFactValue(FactBase.PAROLE_MILIEU, true);
 		}
 		
-		private function SetJoueursRestant():void 
+		private function SetJoueursRestant(_pokerTable:PokerTable):void 
 		{
-			var joueursRestant:int = players.length - GetLostPlayersCount();
+			var joueursRestant:int = PokerTable.PLAYERS_COUNT - _pokerTable.GetLostPlayersCount();
 			
 			if (joueursRestant == 2)
 			{
@@ -513,5 +527,6 @@
 				expertSystem.SetFactValue(FactBase.JOUEURS_QUATRE, true);
 			}
 		}
+		
 	}
 }
