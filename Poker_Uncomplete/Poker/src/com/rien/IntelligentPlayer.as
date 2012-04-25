@@ -148,9 +148,9 @@
 			
 		}
 		
-		public override function ProcessBetRoundStart(_pokerTable:PokerTable) : void
+		public function ProcessBetRoundStart(_pokerTable:PokerTable) : void
 		{
-			
+			SetPositionPlayer(_pokerTable);
 		}
 		
 		public override function ProcessPreflopStart(_pokerTable:PokerTable) : void
@@ -431,6 +431,28 @@
 				case 3 :	expertSystem.SetFactValue(FactBase.JOUER_TOUT_TEMPS, true);
 							break;
 			}
+		}
+		
+		private function SetPositionPlayer(_pokerTable:PokerTable):void 
+		{
+			var myIndex:int 	= 1;
+			var playerIndex:int = _pokerTable.GetPlayerIndex(_pokerTable.GetCurrentPlayer());
+			while (_pokerTable.GetPlayer(playerIndex) != this)
+			{
+				myIndex++;
+				playerIndex 	= _pokerTable.GetNextPlayerIndex(playerIndex);
+			}
+			_pokerTable.GetActivePlayersCount();
+			
+			trace("I am number : " + myIndex); 
+
+			var firstPlayer:PokerPlayer = _pokerTable.GetCurrentPlayer();
+			if (firstPlayer == this)
+				expertSystem.SetFactValue(FactBase.PAROLE_DEBUT, true);
+			else if (this == _pokerTable.GetDealer())
+				expertSystem.SetFactValue(FactBase.PAROLE_FIN, true);
+			else
+				expertSystem.SetFactValue(FactBase.PAROLE_MILIEU, true);
 		}
 	}
 }
