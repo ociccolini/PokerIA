@@ -177,6 +177,11 @@
 		{
 			expertSystem.SetFactValue(FactBase.EVENT_FLOP, true);
 			SetFaitPositionMain (_pokerTable);
+			
+			// Vérifier si il y a des cartes assorties (2 ou 3 de même couleur)
+			// Vérifier si les cartes se suivent
+			// Vérifier si la hauteur des cartes
+			// Vérifier si il y a une paire
 		}
 
 		public override function ProcessTurnStart(_pokerTable:PokerTable) : void

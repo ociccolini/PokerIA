@@ -16,6 +16,12 @@
 		
 		override public function Enter() : void
 		{
+			GetTable().handsCount++;
+			if (GetTable().handsCount % PokerTable.BLIND_STEP_HANDS_COUNT == 0)
+			{
+				GetTable().SetBlindValue(GetTable().GetSmallBlind() * 2);
+			}
+			
 			GetTable().ResetBoard();
 			GetTable().ResetFoldedPlayers();
 			GetTable().ResetAllInPlayers();
