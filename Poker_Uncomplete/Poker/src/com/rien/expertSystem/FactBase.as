@@ -55,6 +55,10 @@
 		public static const HAND_CARRE:Fact 		= new Fact ("Carre");
 		public static const HAND_QUINTE_FLUSH:Fact 	= new Fact ("Quinte flush");
 		
+		// Esperance mathematique 
+		public static const ESPERANCE_POSITIVE:Fact 	= new Fact ("Esperance Positive");
+		public static const ESPERANCE_NEGATIVE:Fact 	= new Fact ("Esperance Negative");
+		
 		// Position de la main vis a vis des possibilités générales
 		public static const PARTIE_TRES_HAUTE:Fact 	= new Fact ("Partie Plus Haute");
 		public static const PARTIE_HAUTE:Fact 		= new Fact ("Partie Haute");

@@ -257,6 +257,27 @@
 		
 		// METHODES AJOUTEES
 		
+		private function SetEsperance (_pokerTable:PokerTable) : void
+		{
+			var tabAmeliorationPossible:Array 	= new Array ();
+			tabAmeliorationPossible 			= RenvoieListeAmeliorationPossible();
+			var valeurMain:int 					= RetourneValeurMain (); 
+			var nbAmelioration:int 				= 0;
+			for each (var valeurAmelioration:int in tabAmeliorationPossible)
+			{
+				if (valeurAmelioration > valeurMain)
+				{
+					nbAmelioration++;
+				}
+			}
+			var probaGain:Number = nbAmelioration / tabAmeliorationPossible.length();
+			// Esperance : Proba de gagner * Pot - Proba perdre * Call
+			if (((probaGain * _pokerTable.GetCurrentPot()) - ((1 - probaGain) * _pokerTable.GetValueToCall())) > 0)
+				expertSystem.SetFactValue(FactBase.ESPERANCE_POSITIVE, true);
+			else
+				expertSystem.SetFactValue(FactBase.ESPERANCE_NEGATIVE, true);
+		}
+		
 		private function SetFaitPositionMain (_pokerTable:PokerTable) : void
 		{
 			var valeursPossibles:int 		= RenvoieListeValeursMainsPossibles(_pokerTable).length;
@@ -278,9 +299,7 @@
 			else
 			{
 				expertSystem.SetFactValue(FactBase.PARTIE_TRES_HAUTE, true);
-			}
-			
-			
+			}		
 		}
 		
 		// Recupere la valeur de notre main
@@ -309,6 +328,11 @@
 			tabCartesMain.push(hand[1]);
 			
 			return PokerTools.GetCardSetValue(tabCartesMain);
+		}
+		
+		private function RetourneValeurMain (valeurIntMain:int) : int
+		{
+			return PokerTools.GetHandValue(valeurIntMain);
 		}
 		
 		// Methode permettant de situer notre main par rapport a l'ensemble des mains possibles, calculé avec les cartes visibles.
