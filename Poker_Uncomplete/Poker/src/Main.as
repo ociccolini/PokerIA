@@ -46,9 +46,9 @@
 			// entry point
 						
 			var players:Array = [	new IntelligentPlayer("IA", PokerTable.PLAYER_INIT_STACK),
-									new PokerPlayer("player 6", PokerTable.PLAYER_INIT_STACK),
-									new PokerPlayer("player 7", PokerTable.PLAYER_INIT_STACK),
-									new PokerPlayer("player 8", PokerTable.PLAYER_INIT_STACK)
+									new PokerPlayer("Vivien", PokerTable.PLAYER_INIT_STACK),
+									new PokerPlayer("Olivier", PokerTable.PLAYER_INIT_STACK),
+									new PokerPlayer("Glenn", PokerTable.PLAYER_INIT_STACK)
 								];
 									
 			pokerTable = new PokerTable(players);

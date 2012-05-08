@@ -26,6 +26,7 @@
 			AddRule(new Rule (FactBase.EVENT_SUIVRE, 	new Array(FactBase.EVENT_PREFLOP, FactBase.JOUER_FIN, FactBase.PAROLE_FIN)));
 			AddRule(new Rule (FactBase.EVENT_RELANCER, 	new Array(FactBase.EVENT_PREFLOP, FactBase.JOUER_FIN, FactBase.PAROLE_FIN)));
 			
+			AddRule(new Rule (FactBase.EVENT_RELANCER, 	new Array(FactBase.EVENT_PREFLOP, FactBase.JOUER_TOUT_TEMPS)));
 			
 			// ****************** FLOP ****************
 			

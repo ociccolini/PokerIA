@@ -62,6 +62,7 @@
 		
 		public override function Play(_pokerTable:PokerTable) : Boolean
 		{
+			trace(" ----------------------------------------------------------> kikoo");
 			/*if (CanCheck(_pokerTable))
 			{
 				if (Math.random() < 0.5)
@@ -92,13 +93,13 @@
 				}
 			}*/
 			
-			perception(_pokerTable);
-			analyse();
-			action(_pokerTable);
+			Perception(_pokerTable);
+			Analyse();
+			Action(_pokerTable);
 			return (lastAction != PokerAction.NONE);
 		}
 		
-		public function perception(_pokerTable:PokerTable) : void {
+		public function Perception(_pokerTable:PokerTable) : void {
 			// Calcul du stack
 			/*var joueursRestant:int = PokerTable.PLAYERS_COUNT - _pokerTable.GetLostPlayersCount();
 			for (var i:int = 0; i < joueursRestant; i++)
@@ -113,10 +114,10 @@
 			
 			
 			SetFaitValeurMain (_pokerTable);
-			expertSystem.SetFactValue(GetIntuition(), false); // rajout du booleen true par défautl
+			expertSystem.SetFactValue(GetIntuition(), false); // rajout du booleen true par défaut
 		}
 		
-		public function analyse() : void {
+		public function Analyse() : void {
 
 			expertSystem.InferForward();
 			var inferedFacts:Array = expertSystem.GetInferedFacts();
@@ -136,22 +137,36 @@
 			}
 		}
 		
-		public function action(_pokerTable:PokerTable) : void {
+		public function Action(_pokerTable:PokerTable) : void {
 			// Recupere le ou les faits finaux (normalement un seul)
-			var tabFaitsFinaux:Array = expertSystem.GetFinalFacts();
-			if(tabFaitsFinaux != null) trace("-> " + (tabFaitsFinaux [0] as Fact).GetLabel());
-			if (tabFaitsFinaux [0] == FactBase.EVENT_COUCHER) 	Fold ();
-			if (tabFaitsFinaux [0] == FactBase.EVENT_CHECK) 	Check ();
-			if (tabFaitsFinaux [0] == FactBase.EVENT_SUIVRE) 	Call (_pokerTable.GetValueToCall());
+			var tabFaitsFinaux:Array = expertSystem.GetInferedFacts();
+			var indice:int;
+			
+			if (tabFaitsFinaux.length == 1)
+				indice = 0;
+			else
+				indice = Math.floor(Math.random() * tabFaitsFinaux.length);
+			
+			if (tabFaitsFinaux [indice] == FactBase.EVENT_COUCHER && this.CanCheck(_pokerTable)) 
+				Check ();
+			else
+				Fold ();
+			
+			if (tabFaitsFinaux [indice] == FactBase.EVENT_CHECK && this.CanCheck(_pokerTable)) 	
+				Check ();
+			else
+				Fold ();
+				
+			if (tabFaitsFinaux [indice] == FactBase.EVENT_SUIVRE) 	Call (_pokerTable.GetValueToCall());
 			// Voir que relancer
-			if (tabFaitsFinaux [0] == FactBase.EVENT_RELANCER) 	Raise(Math.floor(stackValue * Math.random() / 2), _pokerTable.GetValueToCall());
+			if (tabFaitsFinaux [indice] == FactBase.EVENT_RELANCER) 	Raise(Math.floor(stackValue * Math.random() / 2), _pokerTable.GetValueToCall());
+			
 			// Voir comment trouver le pot
 			//if (tabFaitsFinaux [0] == FactBase.EVENT_RELANCER) 	Raise(1000000000000, _pokerTable.GetValueToCall());
 			
 			// Effectue l'action en conséquence
 			// Pour la relance, définir une regle pour savoir de combien on relance
 		}
-		
 		
 		
 		public override function ProcessHandStart(_pokerTable:PokerTable) : void
@@ -161,26 +176,32 @@
 		
 		public override function ProcessBetRoundStart(_pokerTable:PokerTable) : void
 		{
-			SetPositionPlayer(_pokerTable);
+			if(!this.HasFold())
+				SetPositionPlayer(_pokerTable);
 		}
 		
 		public override function ProcessPreflopStart(_pokerTable:PokerTable) : void
 		{
-			expertSystem.SetFactValue(FactBase.EVENT_PREFLOP, true);
-			DefinirActionJoueurPreflop();
+			if (!this.HasFold())
+			{
+				expertSystem.SetFactValue(FactBase.EVENT_PREFLOP, true);
+				DefinirActionJoueurPreflop();
 			
-			trace ("position = " + playerPosition + " - probabilité preflop = " + CalculProbabilitePreflop());
+			trace ("position = " + playerPosition + " - probabilite preflop = " + CalculProbabilitePreflop());
+			}
 		}
 		
 		public override function ProcessFlopStart(_pokerTable:PokerTable) : void
 		{
 			expertSystem.SetFactValue(FactBase.EVENT_FLOP, true);
-			SetFaitPositionMain (_pokerTable);
-			
-			// Vérifier si il y a des cartes assorties (2 ou 3 de même couleur)
-			// Vérifier si les cartes se suivent
-			// Vérifier si la hauteur des cartes
-			// Vérifier si il y a une paire
+			if(!this.HasFold())
+			{
+				SetFaitPositionMain (_pokerTable);
+				// Vérifier si il y a des cartes assorties (2 ou 3 de même couleur)
+				// Vérifier si les cartes se suivent
+				// Vérifier si la hauteur des cartes
+				// Vérifier si il y a une paire
+			}
 		}
 
 		public override function ProcessTurnStart(_pokerTable:PokerTable) : void
