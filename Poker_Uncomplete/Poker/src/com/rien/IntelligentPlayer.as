@@ -182,7 +182,11 @@
 		
 		public override function ProcessPreflopStart(_pokerTable:PokerTable) : void
 		{
+<<<<<<< HEAD
 			if (!_pokerTable.HasFolded(this))
+=======
+			if (!!_pokerTable.HasFolded(this))
+>>>>>>> 03f400811ff45a88baf089481d3d9b387fc0960f
 			{
 				expertSystem.SetFactValue(FactBase.EVENT_PREFLOP, true);
 				DefinirActionJoueurPreflop();
