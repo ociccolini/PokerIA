@@ -62,7 +62,6 @@
 		
 		public override function Play(_pokerTable:PokerTable) : Boolean
 		{
-			trace(" ----------------------------------------------------------> kikoo");
 			/*if (CanCheck(_pokerTable))
 			{
 				if (Math.random() < 0.5)
@@ -112,8 +111,10 @@
 			
 			// Position du joueur
 			
+			if (!expertSystem.GetFactBase().GetFactValue(FactBase.EVENT_PREFLOP)) {
+				SetFaitValeurMain (_pokerTable);
+			}
 			
-			SetFaitValeurMain (_pokerTable);
 			expertSystem.SetFactValue(GetIntuition(), false); // rajout du booleen true par défaut
 		}
 		
@@ -182,14 +183,10 @@
 		
 		public override function ProcessPreflopStart(_pokerTable:PokerTable) : void
 		{
-<<<<<<< HEAD
 			if (!_pokerTable.HasFolded(this))
-=======
-			if (!!_pokerTable.HasFolded(this))
->>>>>>> 03f400811ff45a88baf089481d3d9b387fc0960f
 			{
 				expertSystem.SetFactValue(FactBase.EVENT_PREFLOP, true);
-				DefinirActionJoueurPreflop();
+				SetActionJoueurPreflop();
 			
 			trace ("position = " + playerPosition + " - probabilite preflop = " + CalculProbabilitePreflop());
 			}
@@ -331,7 +328,7 @@
 			tabCartesMain 				= _pokerTable.GetBoard().slice();
 			tabCartesMain.push(hand[0]);
 			tabCartesMain.push(hand[1]);
-			
+			//trace("RetourneValeurIntMain : " + PokerTools.GetCardSetValue(tabCartesMain));
 			return PokerTools.GetCardSetValue(tabCartesMain);
 		}
 		
@@ -363,7 +360,7 @@
 			var tabMainPossible:Array 	= new Array();
 			
 			tabCartesBoard 				= _pokerTable.GetBoard().slice();
-			
+			var index:int = 0;
 			for (var couleur:int = 0; couleur < Suit.COUNT; couleur++)
 			{
 				for (var valeurCarte:int = 0; valeurCarte < Height.COUNT; valeurCarte++)
@@ -378,21 +375,25 @@
 								// Ne traite pas les cartes présentes dans la main ni celles du flop / river / turn
 								if (!EstExclue(couleur, valeurCarte, tabCartesBoard) && !EstExclue(couleurBis, valeurCarteBis, tabCartesBoard))
 								{
+									index++;
 									// On reinitialise la main avec le board
 									tabMainPossible = tabCartesBoard.slice();
 									
 									// On push les 2 cartes generees
-									tabCartesBoard.push(new PlayingCard (couleur, valeurCarte));
-									tabCartesBoard.push(new PlayingCard (couleurBis, valeurCarteBis));
+									tabMainPossible.push(new PlayingCard (couleur, valeurCarte));
+									tabMainPossible.push(new PlayingCard (couleurBis, valeurCarteBis));
 									
 									// On recupere sa valeur en int que l'on met dans un tableau
-									tabValeurRetour.push(PokerTools.GetCardSetValue(tabCartesBoard));
+									trace("index : " + index);
+									trace("RenvoieListeValeursMainsPossibles : " + PokerTools.GetCardSetValue(tabMainPossible));
+									tabValeurRetour.push(PokerTools.GetCardSetValue(tabMainPossible));
 								}
 							}
 						}
 					}
 				}
 			}
+			//trace("index : " + index);
 			return tabValeurRetour;
 		}
 		
@@ -430,6 +431,7 @@
 										tabCartesBoard.push(new PlayingCard (couleurBis, valeurCarteBis));
 										
 										// On recupere la hauteur de la main passée que l'on met dans un tableau
+										trace("RenvoieListeAmeliorationPossible : " + PokerTools.GetCardSetValue(tabCartesBoard));
 										tabValeurRetour.push(PokerTools.GetHandValue(PokerTools.GetCardSetValue(tabCartesBoard)));
 									}
 								}
@@ -448,6 +450,7 @@
 								tabCartesBoard.push(new PlayingCard (couleur, valeurCarte));
 								
 								// On recupere la hauteur de la main passée que l'on met dans un tableau
+								trace("RenvoieListeAmeliorationPossible (else) : " + PokerTools.GetCardSetValue(tabCartesBoard));
 								tabValeurRetour.push(PokerTools.GetHandValue(PokerTools.GetCardSetValue(tabCartesBoard)));
 							}
 						}
@@ -519,7 +522,7 @@
 		}
 		
 		
-		private function DefinirActionJoueurPreflop():void
+		private function SetActionJoueurPreflop():void
 		{
 			switch(CalculProbabilitePreflop())
 			{
