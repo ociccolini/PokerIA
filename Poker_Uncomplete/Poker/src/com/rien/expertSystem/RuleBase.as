@@ -36,10 +36,10 @@
 			// Check / Call
 			// Call / Raise
 			// All in
-			AddRule(new Rule (FactBase.EVENT_COUCHER, 	new Array(FactBase.EVENT_FLOP, FactBase.JOUER_FIN, FactBase.PAROLE_FIN)));
-			AddRule(new Rule (FactBase.EVENT_RELANCER, 	new Array(FactBase.EVENT_FLOP, FactBase.JOUER_FIN, FactBase.PAROLE_FIN)));
-			AddRule(new Rule (FactBase.EVENT_SUIVRE, 	new Array(FactBase.EVENT_FLOP, FactBase.JOUER_FIN, FactBase.PAROLE_FIN)));
-			AddRule(new Rule (FactBase.EVENT_RELANCER, 	new Array(FactBase.EVENT_FLOP, FactBase.JOUER_FIN, FactBase.PAROLE_FIN)));
+			AddRule(new Rule (FactBase.EVENT_COUCHER, 	new Array(FactBase.EVENT_FLOP, FactBase.PARTIE_TRES_BASSE)));
+			AddRule(new Rule (FactBase.EVENT_SUIVRE, 	new Array(FactBase.EVENT_FLOP, FactBase.PARTIE_HAUTE)));
+			AddRule(new Rule (FactBase.EVENT_RELANCER, 	new Array(FactBase.EVENT_FLOP, FactBase.PARTIE_TRES_HAUTE)));
+			
 			
 			// ****************** Turn ****************
 			
