@@ -176,13 +176,13 @@
 		
 		public override function ProcessBetRoundStart(_pokerTable:PokerTable) : void
 		{
-			if(!this.HasFold())
+			if (!_pokerTable.HasFolded(this))
 				SetPositionPlayer(_pokerTable);
 		}
 		
 		public override function ProcessPreflopStart(_pokerTable:PokerTable) : void
 		{
-			if (!this.HasFold())
+			if (!!_pokerTable.HasFolded(this))
 			{
 				expertSystem.SetFactValue(FactBase.EVENT_PREFLOP, true);
 				DefinirActionJoueurPreflop();
@@ -194,7 +194,7 @@
 		public override function ProcessFlopStart(_pokerTable:PokerTable) : void
 		{
 			expertSystem.SetFactValue(FactBase.EVENT_FLOP, true);
-			if(!this.HasFold())
+			if(!_pokerTable.HasFolded(this))
 			{
 				SetFaitPositionMain (_pokerTable);
 				// Vérifier si il y a des cartes assorties (2 ou 3 de même couleur)
@@ -257,11 +257,12 @@
 		
 		// METHODES AJOUTEES
 		
+		// Calcul mathematique de probas permettant de savoir s'il est interessant de continuer ou non
 		private function SetEsperance (_pokerTable:PokerTable) : void
 		{
 			var tabAmeliorationPossible:Array 	= new Array ();
-			tabAmeliorationPossible 			= RenvoieListeAmeliorationPossible();
-			var valeurMain:int 					= RetourneValeurMain (); 
+			tabAmeliorationPossible 			= RenvoieListeAmeliorationPossible(_pokerTable);
+			var valeurMain:int 					= PokerTools.GetHandValue(RetourneValeurIntMain(_pokerTable)); 
 			var nbAmelioration:int 				= 0;
 			for each (var valeurAmelioration:int in tabAmeliorationPossible)
 			{
@@ -272,7 +273,7 @@
 			}
 			var probaGain:Number = nbAmelioration / tabAmeliorationPossible.length();
 			// Esperance : Proba de gagner * Pot - Proba perdre * Call
-			if (((probaGain * _pokerTable.GetCurrentPot()) - ((1 - probaGain) * _pokerTable.GetValueToCall())) > 0)
+			if (((probaGain * _pokerTable.GetCurrentPot().GetValue()) - ((1 - probaGain) * _pokerTable.GetValueToCall())) > 0)
 				expertSystem.SetFactValue(FactBase.ESPERANCE_POSITIVE, true);
 			else
 				expertSystem.SetFactValue(FactBase.ESPERANCE_NEGATIVE, true);
@@ -328,11 +329,6 @@
 			tabCartesMain.push(hand[1]);
 			
 			return PokerTools.GetCardSetValue(tabCartesMain);
-		}
-		
-		private function RetourneValeurMain (valeurIntMain:int) : int
-		{
-			return PokerTools.GetHandValue(valeurIntMain);
 		}
 		
 		// Methode permettant de situer notre main par rapport a l'ensemble des mains possibles, calculé avec les cartes visibles.
@@ -429,14 +425,14 @@
 										tabCartesBoard.push(new PlayingCard (couleur, valeurCarte));
 										tabCartesBoard.push(new PlayingCard (couleurBis, valeurCarteBis));
 										
-										// On recupere sa valeur en int que l'on met dans un tableau
+										// On recupere la hauteur de la main passée que l'on met dans un tableau
 										tabValeurRetour.push(PokerTools.GetHandValue(PokerTools.GetCardSetValue(tabCartesBoard)));
 									}
 								}
 							}
 						}
 						// SI on est au turn
-						else if (tabCartesBoard.length == 4) 
+						else if (tabCartesBoard.length == 4)
 						{
 							// Ne traite pas la cartes présentes dans la main ni celles du flop / river / turn
 							if (!EstExclue(couleur, valeurCarte, tabCartesBoard))
@@ -447,7 +443,7 @@
 								// On push la carte generée
 								tabCartesBoard.push(new PlayingCard (couleur, valeurCarte));
 								
-								// On recupere sa valeur en int que l'on met dans un tableau
+								// On recupere la hauteur de la main passée que l'on met dans un tableau
 								tabValeurRetour.push(PokerTools.GetHandValue(PokerTools.GetCardSetValue(tabCartesBoard)));
 							}
 						}
@@ -496,6 +492,7 @@
 			return probabilite;
 		}
 		
+		// Random permettant de simuler une intuition, plutot positive ou négative
 		private function GetIntuition () : Fact
 		{
 			var random:int = (Math.random() * 4) + 1;
@@ -518,7 +515,7 @@
 		}
 		
 		
-		private function DefinirActionJoueurPreflop():void 
+		private function DefinirActionJoueurPreflop():void
 		{
 			switch(CalculProbabilitePreflop())
 			{
@@ -537,7 +534,7 @@
 		{
 			var myIndex:int 	= 1;
 			var playerIndex:int = _pokerTable.GetPlayerIndex(_pokerTable.GetCurrentPlayer());
-			while (_pokerTable.GetPlayer(playerIndex) != this)
+			while (_pokerTable.GetPlayer(playerIndex) != this && myIndex <= PokerTable.PLAYERS_COUNT)
 			{
 				myIndex++;
 				playerIndex 	= _pokerTable.GetNextPlayerIndex(playerIndex);
