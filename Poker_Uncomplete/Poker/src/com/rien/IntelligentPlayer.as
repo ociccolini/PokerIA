@@ -14,8 +14,6 @@
 		public static const PLAYER_MIDDLE:int	= 2;
 		public static const PLAYER_END:int		= 3;
 		
-		private var playerPosition:int;
-		
 		private static const 	ToujoursJouer:int 			= 3;
 		private static const 	JouerMilieuOuFinParole:int 	= 2;
 		private static const 	JouerSeulementFinParole:int = 1;
@@ -28,7 +26,7 @@
 																			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 																			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 																			[0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
-																			[0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1],
+																			[0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1],
 																			[0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
 																			[0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 3],
 																			[0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 3],
@@ -145,22 +143,21 @@
 			
 			if (tabFaitsFinaux.length == 1)
 				indice = 0;
-			else
-				indice = Math.floor(Math.random() * tabFaitsFinaux.length);
+			//else
+				//indice = Math.floor(Math.random() * tabFaitsFinaux.length);
 			
-			if (tabFaitsFinaux [indice] == FactBase.EVENT_COUCHER && this.CanCheck(_pokerTable)) 
+			if ((tabFaitsFinaux [indice] == FactBase.EVENT_COUCHER || tabFaitsFinaux [indice] == FactBase.EVENT_CHECK) && this.CanCheck(_pokerTable))
 				Check ();
-			else
-				Fold ();
-			
-			if (tabFaitsFinaux [indice] == FactBase.EVENT_CHECK && this.CanCheck(_pokerTable)) 	
-				Check ();
+			else if (tabFaitsFinaux [indice] == FactBase.EVENT_SUIVRE) 	
+				Call (_pokerTable.GetValueToCall());
+			else if (tabFaitsFinaux [indice] == FactBase.EVENT_RELANCER) 	
+				Raise(Math.floor(stackValue * Math.random() / 2), _pokerTable.GetValueToCall());
 			else
 				Fold ();
 				
-			if (tabFaitsFinaux [indice] == FactBase.EVENT_SUIVRE) 	Call (_pokerTable.GetValueToCall());
+			
 			// Voir que relancer
-			if (tabFaitsFinaux [indice] == FactBase.EVENT_RELANCER) 	Raise(Math.floor(stackValue * Math.random() / 2), _pokerTable.GetValueToCall());
+			
 			
 			// Voir comment trouver le pot
 			//if (tabFaitsFinaux [0] == FactBase.EVENT_RELANCER) 	Raise(1000000000000, _pokerTable.GetValueToCall());
@@ -188,7 +185,7 @@
 				expertSystem.SetFactValue(FactBase.EVENT_PREFLOP, true);
 				SetActionJoueurPreflop();
 			
-			trace ("position = " + playerPosition + " - probabilite preflop = " + CalculProbabilitePreflop());
+			trace (" -> probabilite preflop = " + CalculProbabilitePreflop());
 			}
 		}
 		
@@ -282,9 +279,11 @@
 		
 		private function SetFaitPositionMain (_pokerTable:PokerTable) : void
 		{
-			var valeursPossibles:int 		= RenvoieListeValeursMainsPossibles(_pokerTable).length;
+			var tabListeValeursPositionMain:Array = new Array();
+			tabListeValeursPositionMain				= RenvoieListeValeursMainsPossibles(_pokerTable);
+			var valeursPossibles:int				= tabListeValeursPositionMain.length;
 			trace("valeur possible : " + valeursPossibles);
-			var positionMain:int 			= RetournePositionMain (_pokerTable);
+			var positionMain:int 			= RetournePositionMain (_pokerTable, tabListeValeursPositionMain);
 			var pourcentage:Number			= (positionMain * 100) / valeursPossibles;
 			if (pourcentage < 25)
 			{
@@ -333,17 +332,17 @@
 		}
 		
 		// Methode permettant de situer notre main par rapport a l'ensemble des mains possibles, calculé avec les cartes visibles.
-		private function RetournePositionMain (_pokerTable:PokerTable) : int
+		private function RetournePositionMain (_pokerTable:PokerTable, tabListeValeursPositionMain:Array) : int
 		{
-			var tabValeurRetour:Array;
+			//var tabValeurRetour:Array;
 			var valeurMain:int			= RetourneValeurIntMain (_pokerTable);
 			var position:int 			= 0;
 			
 			// Recupere l'ensemble des autres mains possibles, en fonction des cartes inconnues
-			tabValeurRetour 			= RenvoieListeValeursMainsPossibles(_pokerTable);
+			//tabValeurRetour 			= RenvoieListeValeursMainsPossibles(_pokerTable);
 			
 			// Compare la position de notre main par rapport à toutes celles possibles et renvoie notre position
-			for each(var valeurCarte:int in tabValeurRetour)
+			for each(var valeurCarte:int in tabListeValeursPositionMain)
 			{
 				if (valeurCarte < valeurMain)
 				{
