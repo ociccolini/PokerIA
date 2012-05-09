@@ -33,8 +33,7 @@
 			
 			// Check / Call
 			// Call / Raise
-			// All in
-			
+			// All in			
 			AddRule(new Rule (FactBase.EVENT_CHECK_FOLD,new Array(FactBase.EVENT_FLOP, FactBase.JOUER_FIN, FactBase.PAROLE_FIN)));
 			AddRule(new Rule (FactBase.EVENT_RELANCER, 	new Array(FactBase.EVENT_FLOP, FactBase.JOUER_FIN, FactBase.PAROLE_FIN)));
 			AddRule(new Rule (FactBase.EVENT_SUIVRE, 	new Array(FactBase.EVENT_FLOP, FactBase.JOUER_FIN, FactBase.PAROLE_FIN)));
