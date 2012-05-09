@@ -143,10 +143,10 @@
 			
 			if (tabFaitsFinaux.length == 1)
 				indice = 0;
-			//else
-				//indice = Math.floor(Math.random() * tabFaitsFinaux.length);
-			
-			if ((tabFaitsFinaux [indice] == FactBase.EVENT_COUCHER || tabFaitsFinaux [indice] == FactBase.EVENT_CHECK) && this.CanCheck(_pokerTable))
+			else
+				indice = Math.floor(Math.random() * tabFaitsFinaux.length);
+
+			if (tabFaitsFinaux [indice] == FactBase.EVENT_CHECK_FOLD && this.CanCheck(_pokerTable)) 	
 				Check ();
 			else if (tabFaitsFinaux [indice] == FactBase.EVENT_SUIVRE) 	
 				Call (_pokerTable.GetValueToCall());
@@ -155,9 +155,6 @@
 			else
 				Fold ();
 				
-			
-			// Voir que relancer
-			
 			
 			// Voir comment trouver le pot
 			//if (tabFaitsFinaux [0] == FactBase.EVENT_RELANCER) 	Raise(1000000000000, _pokerTable.GetValueToCall());
@@ -285,6 +282,7 @@
 			trace("valeur possible : " + valeursPossibles);
 			var positionMain:int 			= RetournePositionMain (_pokerTable, tabListeValeursPositionMain);
 			var pourcentage:Number			= (positionMain * 100) / valeursPossibles;
+
 			if (pourcentage < 25)
 			{
 				expertSystem.SetFactValue(FactBase.PARTIE_TRES_BASSE, true);
@@ -334,12 +332,11 @@
 		// Methode permettant de situer notre main par rapport a l'ensemble des mains possibles, calculé avec les cartes visibles.
 		private function RetournePositionMain (_pokerTable:PokerTable, tabListeValeursPositionMain:Array) : int
 		{
-			//var tabValeurRetour:Array;
 			var valeurMain:int			= RetourneValeurIntMain (_pokerTable);
 			var position:int 			= 0;
 			
 			// Recupere l'ensemble des autres mains possibles, en fonction des cartes inconnues
-			//tabValeurRetour 			= RenvoieListeValeursMainsPossibles(_pokerTable);
+			tabListeValeursPositionMain = RenvoieListeValeursMainsPossibles(_pokerTable);
 			
 			// Compare la position de notre main par rapport à toutes celles possibles et renvoie notre position
 			for each(var valeurCarte:int in tabListeValeursPositionMain)

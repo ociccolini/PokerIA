@@ -39,8 +39,7 @@
 		public static const PAROLE_FIN:Fact 		= new Fact ("Fin de parole");
 		
 		// Action du joueur
-		public static const EVENT_COUCHER:Fact 		= new Fact ("Se coucher");
-		public static const EVENT_CHECK:Fact 		= new Fact ("Checker");
+		public static const EVENT_CHECK_FOLD:Fact 	= new Fact ("Check/Fold");
 		public static const EVENT_SUIVRE:Fact 		= new Fact ("Suivre");
 		public static const EVENT_RELANCER:Fact 	= new Fact ("Relancer");
 		
@@ -108,8 +107,7 @@
 			AddFact (PAROLE_FIN);
 			
 			// Action du joueur
-			AddFact (EVENT_COUCHER);
-			AddFact (EVENT_CHECK);
+			AddFact (EVENT_CHECK_FOLD);
 			AddFact (EVENT_SUIVRE);
 			AddFact (EVENT_RELANCER);
 			
