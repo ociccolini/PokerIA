@@ -252,8 +252,8 @@
 		
 		// METHODES AJOUTEES
 		
-		// Calcul mathematique de probas permettant de savoir s'il est interessant de continuer ou non
-		private function SetEsperance (_pokerTable:PokerTable) : void
+		// 
+		private function SetPossibiliteAmeliorationMain (_pokerTable:PokerTable) : void
 		{
 			var tabAmeliorationPossible:Array 	= new Array ();
 			tabAmeliorationPossible 			= RenvoieListeAmeliorationPossible(_pokerTable);
@@ -266,7 +266,33 @@
 					nbAmelioration++;
 				}
 			}
-			var probaGain:Number = nbAmelioration / tabAmeliorationPossible.length();
+			
+			var positionMain:int 			= RetournePositionMain (valeurMain, tabAmeliorationPossible);
+			var pourcentage:Number			= (positionMain * 100) / valeursPossibles;
+
+			if (pourcentage < 25)
+			{
+				expertSystem.SetFactValue(FactBase.MAIN_SUP_TRES_HAUTE, true);
+			}
+			else if (pourcentage < 50)
+			{
+				expertSystem.SetFactValue(FactBase.MAIN_SUP_HAUTE, true);
+			}
+			else if (pourcentage < 75)
+			{
+				expertSystem.SetFactValue(FactBase.MAIN_SUP_BASSE, true);
+			}
+			else
+			{
+				expertSystem.SetFactValue(FactBase.MAIN_SUP_TRES_BASSE, true);
+			}		
+			
+		}
+		
+		// Calcul mathematique de probas permettant de savoir s'il est interessant de continuer ou non
+		private function SetEsperanceXXX(probaGain:Number):void 
+		{
+			// var probaGain:Number = nbAmelioration / tabAmeliorationPossible.length();
 			// Esperance : Proba de gagner * Pot - Proba perdre * Call
 			if (((probaGain * _pokerTable.GetCurrentPot().GetValue()) - ((1 - probaGain) * _pokerTable.GetValueToCall())) > 0)
 				expertSystem.SetFactValue(FactBase.ESPERANCE_POSITIVE, true);
@@ -276,12 +302,12 @@
 		
 		private function SetFaitPositionMain (_pokerTable:PokerTable) : void
 		{
-			var tabListeValeursPositionMain:Array = new Array();
+			var tabListeValeursPositionMain:Array 	= new Array();
 			tabListeValeursPositionMain				= RenvoieListeValeursMainsPossibles(_pokerTable);
 			var valeursPossibles:int				= tabListeValeursPositionMain.length;
 			trace("valeur possible : " + valeursPossibles);
-			var positionMain:int 			= RetournePositionMain (_pokerTable, tabListeValeursPositionMain);
-			var pourcentage:Number			= (positionMain * 100) / valeursPossibles;
+			var positionMain:int 					= RetournePositionMain (RetourneValeurIntMain (_pokerTable), tabListeValeursPositionMain);
+			var pourcentage:Number					= (positionMain * 100) / valeursPossibles;
 
 			if (pourcentage < 25)
 			{
@@ -330,18 +356,14 @@
 		}
 		
 		// Methode permettant de situer notre main par rapport a l'ensemble des mains possibles, calculé avec les cartes visibles.
-		private function RetournePositionMain (_pokerTable:PokerTable, tabListeValeursPositionMain:Array) : int
+		private function RetournePositionMain (valeurDeMaMain:int, tabListeValeursPositionMain:Array) : int
 		{
-			var valeurMain:int			= RetourneValeurIntMain (_pokerTable);
 			var position:int 			= 0;
-			
-			// Recupere l'ensemble des autres mains possibles, en fonction des cartes inconnues
-			tabListeValeursPositionMain = RenvoieListeValeursMainsPossibles(_pokerTable);
 			
 			// Compare la position de notre main par rapport à toutes celles possibles et renvoie notre position
 			for each(var valeurCarte:int in tabListeValeursPositionMain)
 			{
-				if (valeurCarte < valeurMain)
+				if (valeurCarte < valeurDeMaMain)
 				{
 					position++;
 				}
@@ -604,6 +626,5 @@
 				expertSystem.SetFactValue(FactBase.JOUEURS_CINQETPLUS, true);
 			}
 		}
-		
 	}
 }
