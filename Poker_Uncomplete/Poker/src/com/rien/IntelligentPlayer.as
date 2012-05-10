@@ -268,7 +268,7 @@
 			}
 			
 			var positionMain:int 			= RetournePositionMain (valeurMain, tabAmeliorationPossible);
-			var pourcentage:Number			= (positionMain * 100) / valeursPossibles;
+			var pourcentage:Number			= (positionMain * 100) / tabAmeliorationPossible.length;
 
 			if (pourcentage < 25)
 			{
@@ -290,7 +290,7 @@
 		}
 		
 		// Calcul mathematique de probas permettant de savoir s'il est interessant de continuer ou non
-		private function SetEsperanceXXX(probaGain:Number):void 
+		private function SetEsperanceXXX(_pokerTable:PokerTable, probaGain:Number):void 
 		{
 			// var probaGain:Number = nbAmelioration / tabAmeliorationPossible.length();
 			// Esperance : Proba de gagner * Pot - Proba perdre * Call
@@ -309,7 +309,7 @@
 
 			var positionMain:int 					= RetournePositionMain (RetourneValeurIntMain (_pokerTable), tabListeValeursPositionMain);
 			var pourcentage:Number					= (positionMain * 100) / valeursPossibles;
-			trace("---------> pourcentage : " + pourcentage);
+			trace("---------> pourcentage : " + pourcentage+"("+positionMain+")");
 
 			if (pourcentage < 25)
 			{
