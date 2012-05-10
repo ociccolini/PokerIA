@@ -142,9 +142,10 @@
 				Call (_pokerTable.GetValueToCall());
 			else if (tabFaitsFinaux [indice] == FactBase.EVENT_RELANCER) 	
 				Raise(Math.floor(stackValue * Math.random() / 2), _pokerTable.GetValueToCall());
+			else if (this.CanCheck(_pokerTable))
+				Check();
 			else
 				Fold ();
-				
 			
 			// Voir comment trouver le pot
 			//if (tabFaitsFinaux [0] == FactBase.EVENT_RELANCER) 	Raise(1000000000000, _pokerTable.GetValueToCall());
