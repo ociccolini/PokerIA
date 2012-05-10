@@ -282,7 +282,7 @@
 			trace("valeur possible : " + valeursPossibles);
 			var positionMain:int 			= RetournePositionMain (_pokerTable, tabListeValeursPositionMain);
 			var pourcentage:Number			= (positionMain * 100) / valeursPossibles;
-
+			trace("---------> pourcentage : " + pourcentage);
 			if (pourcentage < 25)
 			{
 				expertSystem.SetFactValue(FactBase.PARTIE_TRES_BASSE, true);
@@ -380,8 +380,8 @@
 									tabMainPossible.push(new PlayingCard (couleurBis, valeurCarteBis));
 									
 									// On recupere sa valeur en int que l'on met dans un tableau
-									trace("index : " + index);
-									trace("RenvoieListeValeursMainsPossibles : " + PokerTools.GetCardSetValue(tabMainPossible));
+									//trace("index : " + index);
+									//trace("RenvoieListeValeursMainsPossibles : " + PokerTools.GetCardSetValue(tabMainPossible));
 									tabValeurRetour.push(PokerTools.GetCardSetValue(tabMainPossible));
 								}
 							}
@@ -427,7 +427,7 @@
 										tabCartesBoard.push(new PlayingCard (couleurBis, valeurCarteBis));
 										
 										// On recupere la hauteur de la main passée que l'on met dans un tableau
-										trace("RenvoieListeAmeliorationPossible : " + PokerTools.GetCardSetValue(tabCartesBoard));
+										//trace("RenvoieListeAmeliorationPossible : " + PokerTools.GetCardSetValue(tabCartesBoard));
 										tabValeurRetour.push(PokerTools.GetHandValue(PokerTools.GetCardSetValue(tabCartesBoard)));
 									}
 								}
@@ -446,7 +446,7 @@
 								tabCartesBoard.push(new PlayingCard (couleur, valeurCarte));
 								
 								// On recupere la hauteur de la main passée que l'on met dans un tableau
-								trace("RenvoieListeAmeliorationPossible (else) : " + PokerTools.GetCardSetValue(tabCartesBoard));
+								//trace("RenvoieListeAmeliorationPossible (else) : " + PokerTools.GetCardSetValue(tabCartesBoard));
 								tabValeurRetour.push(PokerTools.GetHandValue(PokerTools.GetCardSetValue(tabCartesBoard)));
 							}
 						}
@@ -519,7 +519,7 @@
 		
 		private function SetActionStackJoueur (_pokerTable:PokerTable) : void
 		{
-			var monStack:int 			= this.GetStackValue (_pokerTable.GetPlayer());
+			var monStack:int 			= this.GetStackValue ();
 			var meilleurStack:int 		= monStack;
 			var plusBasStack:int 		= monStack;
 			
