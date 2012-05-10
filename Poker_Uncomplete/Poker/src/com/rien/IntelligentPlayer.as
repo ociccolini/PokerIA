@@ -520,6 +520,35 @@
 			}
 		}
 		
+		private function SetActionStackJoueur (_pokerTable:PokerTable) : void
+		{
+			var monStack:int 			= this.GetStackValue (_pokerTable.GetPlayer());
+			var meilleurStack:int 		= monStack;
+			var plusBasStack:int 		= monStack;
+			
+			var joueurActuel:PokerPlayer;
+			var myIndex:int 			= 1;
+			var playerIndex:int 		= _pokerTable.GetPlayerIndex(_pokerTable.GetCurrentPlayer());
+			while (myIndex <= PokerTable.PLAYERS_COUNT)
+			{
+				joueurActuel 			= _pokerTable.GetPlayer(playerIndex);
+				if (joueurActuel != this)
+				{
+					if (joueurActuel.GetStackValue () > meilleurStack)
+						meilleurStack 	= joueurActuel.GetStackValue ();
+					if (joueurActuel.GetStackValue () < plusBasStack)
+						plusBasStack 	= joueurActuel.GetStackValue ();
+				}
+				myIndex++;
+				playerIndex 			= _pokerTable.GetNextPlayerIndex(playerIndex);
+			}
+			if (monStack == meilleurStack)
+				expertSystem.SetFactValue(FactBase.STACK_MEILLEUR, true);
+			else if (monStack == plusBasStack)
+				expertSystem.SetFactValue(FactBase.STACK_PLUS_BAS, true);
+			else
+				expertSystem.SetFactValue(FactBase.STACK_MOYEN, true);
+		}
 		
 		private function SetActionJoueurPreflop():void
 		{

@@ -16,10 +16,10 @@
 		public static const EVENT_TURN:Fact 		= new Fact ("Turn");
 		public static const EVENT_RIVER:Fact 		= new Fact ("River");
 		
-		// Pot du joueur
-		public static const STACK_HAUT:Fact 		= new Fact ("Stack Haut");
+		// Stack du joueur
+		public static const STACK_MEILLEUR:Fact 	= new Fact ("Stack Meilleur");
 		public static const STACK_MOYEN:Fact 		= new Fact ("Stack Moyen");
-		public static const STACK_BAS:Fact 			= new Fact ("Stack Bas");
+		public static const STACK_PLUS_BAS:Fact 	= new Fact ("Stack Plus Bas");
 		
 		// Nombre de joueurs actifs sur la manche
 		public static const JOUEURS_DEUX:Fact 		= new Fact ("Deux joueurs");
