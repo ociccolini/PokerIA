@@ -24,6 +24,7 @@
 		private static const	Turn:int 	= 2;
 		private static const	River:int 	= 3;
 
+		private var valeurIntMainActuelle:int;
 		
 		private var evenementActuel:int;
 		
@@ -77,6 +78,9 @@
 		public function Perception(_pokerTable:PokerTable) : void {
 			// On reset les faits
 			expertSystem.ResetFacts();
+			
+			// On calcule la valeur en int de la main actuelle
+			valeurIntMainActuelle = RetourneValeurIntMain (_pokerTable);
 			
 			// evenement du jeu
 			SetEvenementDuJeu ();
@@ -250,7 +254,7 @@
 		{
 			var tabAmeliorationPossible:Array 	= new Array ();
 			tabAmeliorationPossible 			= RenvoieListeAmeliorationPossible(_pokerTable);
-			var valeurMain:int 					= PokerTools.GetHandValue(RetourneValeurIntMain(_pokerTable)); 
+			var valeurMain:int 					= PokerTools.GetHandValue(valeurIntMainActuelle); 
 			var nbAmelioration:int 				= 0;
 			for each (var valeurAmelioration:int in tabAmeliorationPossible)
 			{
@@ -260,7 +264,7 @@
 				}
 			}
 			
-			var positionMain:int 			= RetournePositionMain (valeurMain, tabAmeliorationPossible);
+			var positionMain:int 			= RetournePositionMain (tabAmeliorationPossible);
 			var pourcentage:Number			= (positionMain * 100) / tabAmeliorationPossible.length;
 
 			if (pourcentage < 25)
@@ -300,7 +304,7 @@
 			var valeursPossibles:int				= tabListeValeursPositionMain.length;
 			trace("valeur possible : " + valeursPossibles);
 
-			var positionMain:int 					= RetournePositionMain (RetourneValeurIntMain (_pokerTable), tabListeValeursPositionMain);
+			var positionMain:int 					= RetournePositionMain (tabListeValeursPositionMain);
 			var pourcentage:Number					= (positionMain * 100) / valeursPossibles;
 			trace("---------> pourcentage : " + pourcentage+"("+positionMain+")");
 
@@ -325,7 +329,7 @@
 		// Recupere la valeur de notre main
 		private function SetFaitValeurMain (_pokerTable:PokerTable) : void
 		{
-			var valeurMain:int = PokerTools.GetHandValue (RetourneValeurIntMain (_pokerTable));
+			var valeurMain:int = PokerTools.GetHandValue (valeurIntMainActuelle);
 			
 			if (valeurMain == HandValue.HIGH_CARD) 			expertSystem.SetFactValue(FactBase.HAND_HAUTE_MAIN, 	true);
 			if (valeurMain == HandValue.PAIR) 				expertSystem.SetFactValue(FactBase.HAND_PAIRE, 			true);
@@ -349,6 +353,7 @@
 			// Cas spécial du turn, permettant de recuperer la meilleure main
 			if (tabCartesMain.length == 6)
 			{
+				trace(" ------------------------------ >>>> RetourneValeurIntMain ---->>> TURN");
 				var valeurMainRetour:int = 10000;
 				var valeurMainTemp:int;
 				var tabCartesMainTemp:Array = new Array();
@@ -368,6 +373,7 @@
 					while (tabCartesMainTemp.length > 0)
 						tabCartesMainTemp.pop ();
 				}
+				trace ("valeurMainRetour = " + valeurMainRetour);
 				return valeurMainRetour;
 			}
 			else
@@ -375,14 +381,14 @@
 		}
 		
 		// Methode permettant de situer notre main par rapport a l'ensemble des mains possibles, calculé avec les cartes visibles.
-		private function RetournePositionMain (valeurDeMaMain:int, tabListeValeursPositionMain:Array) : int
+		private function RetournePositionMain (tabListeValeursPositionMain:Array) : int
 		{
 			var position:int 			= 0;
 			
 			// Compare la position de notre main par rapport à toutes celles possibles et renvoie notre position
 			for each(var valeurCarte:int in tabListeValeursPositionMain)
 			{
-				if (valeurCarte < valeurDeMaMain)
+				if (valeurCarte < valeurIntMainActuelle)
 				{
 					position++;
 				}
@@ -540,7 +546,7 @@
 			{
 				probabilite = tableauProbabiliteCartesDepareillesPreflop[GetMin(premiereCarte, deuxiemeCarte)][GetMax(premiereCarte, deuxiemeCarte) - 1];
 			}
-			
+			trace (" ------>  probabilite preflop : " + probabilite);
 			return probabilite;
 		}
 		
@@ -600,14 +606,18 @@
 		{
 			switch(CalculProbabilitePreflop())
 			{
-				case 0 :	expertSystem.SetFactValue(FactBase.JOUER_JAMAIS, true);
-							break;
-				case 1 :	expertSystem.SetFactValue(FactBase.JOUER_FIN, true);
-							break;
-				case 2 :	expertSystem.SetFactValue(FactBase.JOUER_MILIEU_OU_FIN, true);
-							break;
-				case 3 :	expertSystem.SetFactValue(FactBase.JOUER_TOUT_TEMPS, true);
-							break;
+				case 0 :	
+					expertSystem.SetFactValue(FactBase.JOUER_JAMAIS, true);
+					break;
+				case 1 :	
+					expertSystem.SetFactValue(FactBase.JOUER_FIN, true);
+					break;
+				case 2 :	
+					expertSystem.SetFactValue(FactBase.JOUER_MILIEU_OU_FIN, true);
+					break;
+				case 3 :	
+					expertSystem.SetFactValue(FactBase.JOUER_TOUT_TEMPS, true);
+					break;
 			}
 		}
 		
