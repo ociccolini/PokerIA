@@ -243,7 +243,7 @@
 		
 		public function CanCheck(_pokerTable:PokerTable) : Boolean
 		{
-			return (_pokerTable.GetValueToCall() == 0);
+			return (_pokerTable.GetValueToCall() == this.GetBetValue());
 		}
 
 		public function AddToStack(_value:Number) : void
