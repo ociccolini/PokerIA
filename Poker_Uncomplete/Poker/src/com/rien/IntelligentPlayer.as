@@ -19,6 +19,14 @@
 		private static const 	JouerSeulementFinParole:int = 1;
 		private static const 	NeJamaisJouer:int 			= 0;
 		
+		private static const	Preflop:int = 0;
+		private static const	Flop:int 	= 1;
+		private static const	Turn:int 	= 2;
+		private static const	River:int 	= 3;
+
+		
+		private var evenementActuel:int;
+		
 		private var tableauProbabiliteCartesDepareillesPreflop:Array =  [
 																			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 																			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -59,37 +67,7 @@
 		}
 		
 		public override function Play(_pokerTable:PokerTable) : Boolean
-		{
-			/*if (CanCheck(_pokerTable))
-			{
-				if (Math.random() < 0.5)
-				{
-					Check();
-				}
-				else
-				{
-					Raise(Math.floor(stackValue * Math.random() / 2), _pokerTable.GetValueToCall());					
-				}
-			}
-			else 
-			{
-				if (Math.random() < 0.5)
-				{
-					if (Math.random() < 0.3)
-					{
-						Raise(Math.floor(stackValue * Math.random() / 2), _pokerTable.GetValueToCall());
-					}
-					else
-					{
-						Call(_pokerTable.GetValueToCall());
-					}
-				}
-				else
-				{
-					Fold();
-				}
-			}*/
-			
+		{	
 			Perception(_pokerTable);
 			Analyse();
 			Action(_pokerTable);
@@ -97,23 +75,40 @@
 		}
 		
 		public function Perception(_pokerTable:PokerTable) : void {
+			// On reset les faits
+			expertSystem.ResetFacts();
+			
+			// evenement du jeu
+			SetEvenementDuJeu ();
+			
+			// nombre de joueurs actifs dans la manche
+			SetJoueursRestant(_pokerTable);
+			
+			// Intuition
+			SetIntuition ();
+			
 			// Calcul du stack
-			/*var joueursRestant:int = PokerTable.PLAYERS_COUNT - _pokerTable.GetLostPlayersCount();
+			SetActionStackJoueur (_pokerTable);
+			
+			// Action spécifique suivant l'evenement
+			if (evenementActuel == Preflop)
+			{
+				SetPositionPlayer(_pokerTable);
+				SetActionJoueurPreflop();
+			}
+			else
+			{
+				SetFaitValeurMain (_pokerTable);
+				if (evenementActuel == Flop || evenementActuel == River)
+					SetFaitPositionMain (_pokerTable);
+			}
+			
+				/*var joueursRestant:int = PokerTable.PLAYERS_COUNT - _pokerTable.GetLostPlayersCount();
 			for (var i:int = 0; i < joueursRestant; i++)
 			{
 				trace("-> "+i+") "+_pokerTable.GetPlayer(i).GetStackValue());
 			}
 			*/
-			// nombre de joueurs actifs dans la manche
-			SetJoueursRestant(_pokerTable);
-			
-			// Position du joueur
-			
-			if (!expertSystem.GetFactBase().GetFactValue(FactBase.EVENT_PREFLOP)) {
-				SetFaitValeurMain (_pokerTable);
-			}
-			
-			expertSystem.SetFactValue(GetIntuition(), false); // rajout du booleen true par défaut
 		}
 		
 		public function Analyse() : void {
@@ -121,19 +116,10 @@
 			expertSystem.InferForward();
 			var inferedFacts:Array = expertSystem.GetInferedFacts();
 			//trace("Infered Facts:");
-			for each(var inferedFact:Fact in inferedFacts)
-			{
-				//trace(inferedFact.GetLabel());
-			}
 
-			expertSystem.ResetFacts();
 			expertSystem.InferBackward();
 			var factsToAsk:Array = expertSystem.GetFactsToAsk();
 			//trace("Facts to ask :");
-			for each(var factToAsk:Fact in factsToAsk)
-			{
-				//trace(factToAsk.GetLabel());
-			}
 		}
 		
 		public function Action(_pokerTable:PokerTable) : void {
@@ -171,43 +157,31 @@
 		
 		public override function ProcessBetRoundStart(_pokerTable:PokerTable) : void
 		{
-			if (!_pokerTable.HasFolded(this))
-				SetPositionPlayer(_pokerTable);
+
 		}
 		
 		public override function ProcessPreflopStart(_pokerTable:PokerTable) : void
 		{
-			if (!_pokerTable.HasFolded(this))
-			{
-				expertSystem.SetFactValue(FactBase.EVENT_PREFLOP, true);
-				SetActionJoueurPreflop();
-			
-			trace (" -> probabilite preflop = " + CalculProbabilitePreflop());
-			}
+			evenementActuel = Preflop;
+			trace ("************ PREFLOP **************");
 		}
 		
 		public override function ProcessFlopStart(_pokerTable:PokerTable) : void
 		{
-			expertSystem.SetFactValue(FactBase.EVENT_FLOP, true);
-			if(!_pokerTable.HasFolded(this))
-			{
-				SetFaitPositionMain (_pokerTable);
-				// Vérifier si il y a des cartes assorties (2 ou 3 de même couleur)
-				// Vérifier si les cartes se suivent
-				// Vérifier si la hauteur des cartes
-				// Vérifier si il y a une paire
-			}
+			evenementActuel = Flop;
+			trace ("************ FLOP **************");
 		}
 
 		public override function ProcessTurnStart(_pokerTable:PokerTable) : void
 		{
-			expertSystem.SetFactValue(FactBase.EVENT_TURN, true);
+			evenementActuel = Turn;
+			trace ("************ TURN **************");
 		}
 
 		public override function ProcessRiverStart(_pokerTable:PokerTable) : void
 		{
-			expertSystem.SetFactValue(FactBase.EVENT_RIVER, true);
-			SetFaitPositionMain (_pokerTable);
+			evenementActuel = River;
+			trace ("************ RIVER **************");
 		}
 
 		public override function ProcessHandEnd(_pokerTable:PokerTable) : void
@@ -251,6 +225,25 @@
 		}
 		
 		// METHODES AJOUTEES
+		
+		private function SetEvenementDuJeu():void 
+		{
+			switch (evenementActuel)
+			{
+				case Preflop :
+					expertSystem.SetFactValue(FactBase.EVENT_PREFLOP, true);
+					break;
+				case Flop :
+					expertSystem.SetFactValue(FactBase.EVENT_FLOP, true);
+					break;
+				case Turn :
+					expertSystem.SetFactValue(FactBase.EVENT_TURN, true);
+					break;
+				case River :
+					expertSystem.SetFactValue(FactBase.EVENT_RIVER, true);
+					break;
+			}	
+		}
 		
 		// 
 		private function SetPossibiliteAmeliorationMain (_pokerTable:PokerTable) : void
@@ -313,19 +306,19 @@
 
 			if (pourcentage < 25)
 			{
-				expertSystem.SetFactValue(FactBase.PARTIE_TRES_BASSE, true);
+				expertSystem.SetFactValue(FactBase.PARTIE_TRES_HAUTE, true);
 			}
 			else if (pourcentage < 50)
 			{
-				expertSystem.SetFactValue(FactBase.PARTIE_BASSE, true);
+				expertSystem.SetFactValue(FactBase.PARTIE_HAUTE, true);
 			}
 			else if (pourcentage < 75)
 			{
-				expertSystem.SetFactValue(FactBase.PARTIE_HAUTE, true);
+				expertSystem.SetFactValue(FactBase.PARTIE_BASSE, true);
 			}
 			else
 			{
-				expertSystem.SetFactValue(FactBase.PARTIE_TRES_HAUTE, true);
+				expertSystem.SetFactValue(FactBase.PARTIE_TRES_BASSE, true);
 			}		
 		}
 		
@@ -349,12 +342,36 @@
 		private function RetourneValeurIntMain (_pokerTable:PokerTable) : int
 		{
 			var tabCartesMain:Array		= new Array();
-			var tabCartesMainBis:Array	= new Array();
 			tabCartesMain 				= _pokerTable.GetBoard().slice();
 			tabCartesMain.push(hand[0]);
 			tabCartesMain.push(hand[1]);
-			//trace("RetourneValeurIntMain : " + PokerTools.GetCardSetValue(tabCartesMain));
-			return PokerTools.GetCardSetValue(tabCartesMain);
+			
+			// Cas spécial du turn, permettant de recuperer la meilleure main
+			if (tabCartesMain.length == 6)
+			{
+				var valeurMainRetour:int = 10000;
+				var valeurMainTemp:int;
+				var tabCartesMainTemp:Array = new Array();
+				// On teste les 6 
+				for (var iterator:int = 0; iterator < 6; iterator++)
+				{
+					for (var indice:int = 0; indice < 6; indice++)
+					{
+						if (indice != iterator)
+							tabCartesMainTemp.push (tabCartesMain [indice]);
+					}
+					valeurMainTemp = PokerTools.GetCardSetValue(tabCartesMainTemp);
+					if (valeurMainTemp < valeurMainRetour)
+						valeurMainRetour = valeurMainTemp;
+					
+					// Reset tableau
+					while (tabCartesMainTemp.length > 0)
+						tabCartesMainTemp.pop ();
+				}
+				return valeurMainRetour;
+			}
+			else
+				return PokerTools.GetCardSetValue(tabCartesMain);
 		}
 		
 		// Methode permettant de situer notre main par rapport a l'ensemble des mains possibles, calculé avec les cartes visibles.
@@ -397,7 +414,7 @@
 								{
 									index++;
 									// On reinitialise la main avec le board
-									tabMainPossible = tabCartesBoard.slice();
+									tabMainPossible = tabCartesBoard.slice(); 
 									
 									// On push les 2 cartes generees
 									tabMainPossible.push(new PlayingCard (couleur, valeurCarte));
@@ -446,6 +463,10 @@
 										// On reinitialise la main avec le board
 										tabMainPossible = tabCartesBoard.slice();
 										
+										// On push les 2 cartes de notre main 
+										tabCartesBoard.push(hand[0]);
+										tabCartesBoard.push(hand[1]);
+										
 										// On push les 2 cartes generees
 										tabCartesBoard.push(new PlayingCard (couleur, valeurCarte));
 										tabCartesBoard.push(new PlayingCard (couleurBis, valeurCarteBis));
@@ -465,6 +486,10 @@
 							{
 								// On reinitialise la main avec le board
 								tabMainPossible = tabCartesBoard.slice();
+								
+								// On push les 2 cartes de notre main 
+								tabCartesBoard.push(hand[0]);
+								tabCartesBoard.push(hand[1]);
 								
 								// On push la carte generée
 								tabCartesBoard.push(new PlayingCard (couleur, valeurCarte));
@@ -520,10 +545,10 @@
 		}
 		
 		// Random permettant de simuler une intuition, plutot positive ou négative
-		private function GetIntuition () : Fact
+		private function SetIntuition () : Fact
 		{
 			var random:int = (Math.random() * 4) + 1;
-			trace ("valeur intuition = " + random);
+			//trace ("valeur intuition = " + random);
 			switch (random)
 			{
 			case 1 :

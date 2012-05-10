@@ -34,12 +34,11 @@
 			// ****************** FLOP ****************
 			
 			// Check / Fold
-			AddRule(new Rule (FactBase.EVENT_CHECK_FOLD,new Array(FactBase.EVENT_FLOP, FactBase.JOUER_FIN, FactBase.PAROLE_FIN)));
-			
 			// Check / Call
 			// Call / Raise
-
 			// All in
+			
+			
 			AddRule(new Rule (FactBase.EVENT_CHECK_FOLD, 	new Array(FactBase.EVENT_FLOP, FactBase.PARTIE_TRES_BASSE)));
 			AddRule(new Rule (FactBase.EVENT_CHECK_FOLD, 	new Array(FactBase.EVENT_FLOP, FactBase.PARTIE_BASSE)));
 			AddRule(new Rule (FactBase.EVENT_SUIVRE, 	new Array(FactBase.EVENT_FLOP, FactBase.PARTIE_HAUTE)));
