@@ -86,9 +86,9 @@
 			AddFact (EVENT_TURN);
 			
 			// Pot du joueur
-			AddFact (STACK_HAUT);
+			AddFact (STACK_MEILLEUR);
 			AddFact (STACK_MOYEN);
-			AddFact (STACK_BAS);
+			AddFact (STACK_PLUS_BAS);
 			
 			// Nombre de joueurs actifs sur la manche
 			AddFact (JOUEURS_DEUX);
