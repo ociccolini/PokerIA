@@ -14,8 +14,6 @@
 		public static const PLAYER_MIDDLE:int	= 2;
 		public static const PLAYER_END:int		= 3;
 		
-		private var playerPosition:int;
-		
 		private static const 	ToujoursJouer:int 			= 3;
 		private static const 	JouerMilieuOuFinParole:int 	= 2;
 		private static const 	JouerSeulementFinParole:int = 1;
@@ -28,7 +26,7 @@
 																			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 																			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 																			[0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
-																			[0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1],
+																			[0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1],
 																			[0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
 																			[0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 3],
 																			[0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 3],
@@ -150,15 +148,13 @@
 
 			if (tabFaitsFinaux [indice] == FactBase.EVENT_CHECK_FOLD && this.CanCheck(_pokerTable)) 	
 				Check ();
+			else if (tabFaitsFinaux [indice] == FactBase.EVENT_SUIVRE) 	
+				Call (_pokerTable.GetValueToCall());
+			else if (tabFaitsFinaux [indice] == FactBase.EVENT_RELANCER) 	
+				Raise(Math.floor(stackValue * Math.random() / 2), _pokerTable.GetValueToCall());
 			else
 				Fold ();
 				
-			if (tabFaitsFinaux [indice] == FactBase.EVENT_SUIVRE) 	
-				Call (_pokerTable.GetValueToCall());
-			
-			// Voir que relancer
-			if (tabFaitsFinaux [indice] == FactBase.EVENT_RELANCER) 	
-				Raise(Math.floor(stackValue * Math.random() / 2), _pokerTable.GetValueToCall());
 			
 			// Voir comment trouver le pot
 			//if (tabFaitsFinaux [0] == FactBase.EVENT_RELANCER) 	Raise(1000000000000, _pokerTable.GetValueToCall());
@@ -186,7 +182,7 @@
 				expertSystem.SetFactValue(FactBase.EVENT_PREFLOP, true);
 				SetActionJoueurPreflop();
 			
-			trace ("position = " + playerPosition + " - probabilite preflop = " + CalculProbabilitePreflop());
+			trace (" -> probabilite preflop = " + CalculProbabilitePreflop());
 			}
 		}
 		
@@ -280,12 +276,13 @@
 		
 		private function SetFaitPositionMain (_pokerTable:PokerTable) : void
 		{
-			var tabListeValeursPositionMain:Array 	= new Array ();
-			tabListeValeursPositionMain 			= RenvoieListeValeursMainsPossibles(_pokerTable);
-			var valeursPossibles:int 				= tabListeValeursPositionMain.length;
+			var tabListeValeursPositionMain:Array = new Array();
+			tabListeValeursPositionMain				= RenvoieListeValeursMainsPossibles(_pokerTable);
+			var valeursPossibles:int				= tabListeValeursPositionMain.length;
 			trace("valeur possible : " + valeursPossibles);
-			var positionMain:int 					= RetournePositionMain (_pokerTable, tabListeValeursPositionMain);
-			var pourcentage:Number					= (positionMain * 100) / valeursPossibles;
+			var positionMain:int 			= RetournePositionMain (_pokerTable, tabListeValeursPositionMain);
+			var pourcentage:Number			= (positionMain * 100) / valeursPossibles;
+
 			if (pourcentage < 25)
 			{
 				expertSystem.SetFactValue(FactBase.PARTIE_TRES_BASSE, true);
