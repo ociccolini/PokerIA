@@ -76,6 +76,12 @@
 		public static const INTUITION_FAIBLE:Fact 		= new Fact ("Intuition faible");
 		public static const INTUITION_TRES_FAIBLE:Fact 	= new Fact ("Intuition tres faible");
 		
+		// Hauteur de la mise par rapport à la big blind
+		public static const MISE_GROSSE_RELANCE:Fact 	= new Fact ("Grosse relance");
+		public static const MISE_DOUBLE_BIGBLIND:Fact 		= new Fact ("Mise > 2 x big blind");
+		public static const MISE_EGALE_BIGBLIND:Fact 		= new Fact ("Mise = big blind");
+		
+		
 		// ******************************************* FIN BASE DE FAITS *****************************************
 		
 		public function FactBase() 
@@ -90,7 +96,7 @@
 			AddFact (EVENT_RIVER);
 			AddFact (EVENT_TURN);
 			
-			// Pot du joueur
+			// Stack du joueur
 			AddFact (STACK_MEILLEUR);
 			AddFact (STACK_MOYEN);
 			AddFact (STACK_PLUS_BAS);

@@ -94,6 +94,9 @@
 			// Calcul du stack
 			SetActionStackJoueur (_pokerTable);
 			
+			// On récupère la valeur de la mise
+			SetValeurDeLaMise (_pokerTable);
+			
 			// Action spécifique suivant l'evenement
 			if (evenementActuel == Preflop)
 			{
@@ -601,6 +604,16 @@
 				expertSystem.SetFactValue(FactBase.STACK_PLUS_BAS, true);
 			else
 				expertSystem.SetFactValue(FactBase.STACK_MOYEN, true);
+		}		
+		
+		private function SetValeurDeLaMise (_pokerTable : PokerTable) : void
+		{
+			if (_pokerTable.GetBigBlind() == _pokerTable.GetValueToCall())
+				expertSystem.SetFactValue(FactBase.MISE_EGALE_BIGBLIND, true);
+			else if ((_pokerTable.GetBigBlind() * 2) == _pokerTable.GetValueToCall())
+				expertSystem.SetFactValue(FactBase.MISE_DOUBLE_BIGBLIND, true);
+			else
+				expertSystem.SetFactValue(FactBase.MISE_GROSSE_RELANCE, true);
 		}
 		
 		private function SetActionJoueurPreflop():void
