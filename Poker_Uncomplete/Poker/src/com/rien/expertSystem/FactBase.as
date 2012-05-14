@@ -59,16 +59,16 @@
 		public static const ESPERANCE_NEGATIVE:Fact 	= new Fact ("Esperance Negative");
 		
 		// Position de la main vis a vis des possibilités générales
-		public static const PARTIE_TRES_HAUTE:Fact 		= new Fact ("Partie Plus Haute");
+		public static const PARTIE_TRES_HAUTE:Fact 		= new Fact ("Partie Très Haute");
 		public static const PARTIE_HAUTE:Fact 			= new Fact ("Partie Haute");
 		public static const PARTIE_BASSE:Fact 			= new Fact ("Partie Basse");
-		public static const PARTIE_TRES_BASSE:Fact 		= new Fact ("Partie Plus Basse");
+		public static const PARTIE_TRES_BASSE:Fact 		= new Fact ("Partie Très Basse");
 		
-		// Probabilite d'obtenir une main superieur
-		public static const MAIN_SUP_TRES_HAUTE:Fact	= new Fact ("Obtenir main sup Tres Haute");
+		// Probabilite d'obtenir une main superieure
+		public static const MAIN_SUP_TRES_HAUTE:Fact	= new Fact ("Obtenir main sup Très Haute");
 		public static const MAIN_SUP_HAUTE:Fact 		= new Fact ("Obtenir main sup Haute");
 		public static const MAIN_SUP_BASSE:Fact 		= new Fact ("Obtenir main sup Basse");
-		public static const MAIN_SUP_TRES_BASSE:Fact 	= new Fact ("Obtenir main sup Tres Basse");
+		public static const MAIN_SUP_TRES_BASSE:Fact 	= new Fact ("Obtenir main sup Très Basse");
 		
 		// Intuition du joueur, determiné par un random
 		public static const INTUITION_TRES_FORTE:Fact 	= new Fact ("Intuition tres forte");
