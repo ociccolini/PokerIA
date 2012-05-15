@@ -147,7 +147,7 @@
 				Call (_pokerTable.GetValueToCall());
 			else if (tabFaitsFinaux [indice] == FactBase.EVENT_RELANCER) 	
 				// On effectue une relance aléatoire comprise entre 1 et 4 fois la big blind
-				Raise(1 + Math.floor(Math.random() * 3) * _pokerTable.GetBigBlind(), _pokerTable.GetValueToCall());
+				Raise(Math.floor((Math.random() * 3) + 1) * _pokerTable.GetBigBlind(), _pokerTable.GetValueToCall());
 			else if (this.CanCheck(_pokerTable))
 				Check();
 			else

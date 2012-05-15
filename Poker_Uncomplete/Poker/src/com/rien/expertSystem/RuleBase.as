@@ -81,8 +81,6 @@
 			//					- notre main se situe dans la partie haute de l'ensemble des valeurs des mains possibles, et la mise a suivre ne dépasse pas le double de la big blind
 			AddRule(new Rule (FactBase.EVENT_SUIVRE, 		new Array(FactBase.EVENT_FLOP, FactBase.PARTIE_HAUTE, FactBase.MISE_EGALE_BIGBLIND)));
 			AddRule(new Rule (FactBase.EVENT_SUIVRE, 		new Array(FactBase.EVENT_FLOP, FactBase.PARTIE_HAUTE, FactBase.MISE_DOUBLE_BIGBLIND)));
-
-
 			
 			// Relance si :
 			//					- notre main se situe dans la partie tres haute de l'ensemble des valeurs des mains possibles
@@ -102,25 +100,51 @@
 			//AddRule(new Rule (FactBase., 					new Array(FactBase.EVENT_FLOP, FactBase.PARTIE_TRES_HAUTE)));
 			
 			// ****************** Turn ****************
-			AddRule(new Rule (FactBase.EVENT_CHECK_FOLD, 	new Array(FactBase.EVENT_TURN, FactBase.PARTIE_TRES_BASSE)));
-			AddRule(new Rule (FactBase.EVENT_CHECK_FOLD, 	new Array(FactBase.EVENT_TURN, FactBase.PARTIE_BASSE)));
-			//AddRule(new Rule (FactBase.EVENT_SUIVRE, 		new Array(FactBase.EVENT_TURN, FactBase.PARTIE_HAUTE)));
-			AddRule(new Rule (FactBase.EVENT_SUIVRE, 		new Array(FactBase.EVENT_TURN, FactBase.PARTIE_HAUTE, FactBase.MISE_EGALE_BIGBLIND)));
-			AddRule(new Rule (FactBase.EVENT_SUIVRE, 		new Array(FactBase.EVENT_TURN, FactBase.PARTIE_HAUTE, FactBase.MISE_DOUBLE_BIGBLIND)));
-			AddRule(new Rule (FactBase.EVENT_CHECK_FOLD,	new Array(FactBase.EVENT_TURN, FactBase.PARTIE_HAUTE, FactBase.MISE_GROSSE_RELANCE)));
-			AddRule(new Rule (FactBase.EVENT_RELANCER, 		new Array(FactBase.EVENT_TURN, FactBase.PARTIE_TRES_HAUTE)));
+			
+			// Se couche si :
+			// 					- notre main se situe dans la partie tres basse de l'ensemble des valeurs des mains possibles, que la proba de main suppérieure est tres forte ou moins
+			AddRule(new Rule (FactBase.EVENT_CHECK_FOLD, 	new Array(FactBase.EVENT_FLOP, FactBase.PARTIE_TRES_BASSE)));
+			AddRule(new Rule (FactBase.EVENT_CHECK_FOLD, 	new Array(FactBase.EVENT_FLOP, FactBase.PARTIE_TRES_BASSE, FactBase.MAIN_SUP_BASSE)));
+			AddRule(new Rule (FactBase.EVENT_CHECK_FOLD, 	new Array(FactBase.EVENT_FLOP, FactBase.PARTIE_TRES_BASSE, FactBase.MAIN_SUP_TRES_BASSE)));
+			// 					- notre main se situe dans la partie basse de l'ensemble des valeurs des mains possibles, si la mise a suivre est égale ou supérieure à la big blind
+			AddRule(new Rule (FactBase.EVENT_CHECK_FOLD, 	new Array(FactBase.EVENT_FLOP, FactBase.PARTIE_BASSE, FactBase.MISE_DOUBLE_BIGBLIND)));
+			AddRule(new Rule (FactBase.EVENT_CHECK_FOLD, 	new Array(FactBase.EVENT_FLOP, FactBase.PARTIE_BASSE, FactBase.MISE_GROSSE_RELANCE)));
+			// 					- notre main se situe dans la partie haute de l'ensemble des valeurs des mains possibles, si la mise a suivre est supérieure à la big blind
+			AddRule(new Rule (FactBase.EVENT_CHECK_FOLD,	new Array(FactBase.EVENT_FLOP, FactBase.PARTIE_HAUTE, FactBase.MISE_GROSSE_RELANCE)));
+			
+			// Suit si :
+			// 					- notre main se situe dans la partie tres basse de l'ensemble des valeurs des mains possibles, si la mise a suivre est égale à la big blind, et si la probabilité d'avoir une main supérieure est tres forte
+			AddRule(new Rule (FactBase.EVENT_SUIVRE, 	new Array(FactBase.EVENT_FLOP, FactBase.PARTIE_TRES_BASSE, FactBase.MAIN_SUP_TRES_HAUTE)));
+			
+			//					- notre main se situe dans la partie basse de l'ensemble des valeurs des mains possibles, et la mise a suivre ne dépasse pas la big blind
+			AddRule(new Rule (FactBase.EVENT_SUIVRE, 		new Array(FactBase.EVENT_FLOP, FactBase.PARTIE_BASSE, FactBase.MISE_EGALE_BIGBLIND)));
+			//					- notre main se situe dans la partie haute de l'ensemble des valeurs des mains possibles, et la mise a suivre ne dépasse pas le double de la big blind
+			AddRule(new Rule (FactBase.EVENT_SUIVRE, 		new Array(FactBase.EVENT_FLOP, FactBase.PARTIE_HAUTE, FactBase.MISE_EGALE_BIGBLIND)));
+			AddRule(new Rule (FactBase.EVENT_SUIVRE, 		new Array(FactBase.EVENT_FLOP, FactBase.PARTIE_HAUTE, FactBase.MISE_DOUBLE_BIGBLIND)));
+			
+			// Relance si :
+			//					- notre main se situe dans la partie tres haute de l'ensemble des valeurs des mains possibles
+			AddRule(new Rule (FactBase.EVENT_RELANCER, 		new Array(FactBase.EVENT_FLOP, FactBase.PARTIE_TRES_HAUTE)));
 			
 			// ****************** River ****************
-			AddRule(new Rule (FactBase.EVENT_CHECK_FOLD, 	new Array(FactBase.EVENT_RIVER, FactBase.PARTIE_TRES_BASSE)));
-			AddRule(new Rule (FactBase.EVENT_CHECK_FOLD, 	new Array(FactBase.EVENT_RIVER, FactBase.PARTIE_BASSE)));
-			//AddRule(new Rule (FactBase.EVENT_SUIVRE, 		new Array(FactBase.EVENT_RIVER, FactBase.PARTIE_HAUTE)));
-			AddRule(new Rule (FactBase.EVENT_SUIVRE, 		new Array(FactBase.EVENT_RIVER, FactBase.PARTIE_HAUTE, FactBase.MISE_EGALE_BIGBLIND)));
-			AddRule(new Rule (FactBase.EVENT_SUIVRE, 		new Array(FactBase.EVENT_RIVER, FactBase.PARTIE_HAUTE, FactBase.MISE_DOUBLE_BIGBLIND)));
-			AddRule(new Rule (FactBase.EVENT_CHECK_FOLD,	new Array(FactBase.EVENT_RIVER, FactBase.PARTIE_HAUTE, FactBase.MISE_GROSSE_RELANCE)));
-			AddRule(new Rule (FactBase.EVENT_RELANCER, 		new Array(FactBase.EVENT_RIVER, FactBase.PARTIE_TRES_HAUTE)));
+			
+			// Se couche si :
+			// 					- notre main se situe dans la partie tres basse de l'ensemble des valeurs des mains possibles
+			AddRule(new Rule (FactBase.EVENT_CHECK_FOLD, 	new Array(FactBase.EVENT_FLOP, FactBase.PARTIE_TRES_BASSE)));
+			// 					- notre main se situe dans la partie basse de l'ensemble des valeurs des mains possibles
+			AddRule(new Rule (FactBase.EVENT_CHECK_FOLD, 	new Array(FactBase.EVENT_FLOP, FactBase.PARTIE_BASSE)));
+			// 					- notre main se situe dans la partie haute de l'ensemble des valeurs des mains possibles, si la mise a suivre est supérieure à la big blind
+			AddRule(new Rule (FactBase.EVENT_CHECK_FOLD,	new Array(FactBase.EVENT_FLOP, FactBase.PARTIE_HAUTE, FactBase.MISE_GROSSE_RELANCE)));
+			
+			// Suit si :
+			//					- notre main se situe dans la partie haute de l'ensemble des valeurs des mains possibles, et la mise a suivre ne dépasse pas le double de la big blind
+			AddRule(new Rule (FactBase.EVENT_SUIVRE, 		new Array(FactBase.EVENT_FLOP, FactBase.PARTIE_HAUTE, FactBase.MISE_EGALE_BIGBLIND)));
+			AddRule(new Rule (FactBase.EVENT_SUIVRE, 		new Array(FactBase.EVENT_FLOP, FactBase.PARTIE_HAUTE, FactBase.MISE_DOUBLE_BIGBLIND)));
+			
+			// Relance si :
+			//					- notre main se situe dans la partie tres haute de l'ensemble des valeurs des mains possibles
+			AddRule(new Rule (FactBase.EVENT_RELANCER, 		new Array(FactBase.EVENT_FLOP, FactBase.PARTIE_TRES_HAUTE)));
 
-			
-			
 			
 			// ******************************************* FIN BASE DE REGLES *****************************************
 		}
