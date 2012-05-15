@@ -137,14 +137,17 @@
 			if (tabFaitsFinaux.length == 1)
 				indice = 0;
 			else
-				indice = Math.floor(Math.random() * tabFaitsFinaux.length);
+				// Comme la table de regle va de check/Fold à Raise, on prend la dernier indice, ce qui permet de choisir de suivre meme si une regle check/fold est vraie 
+				//(normalement cette confrontation de regles est impossible, simple sécurité) 
+				indice = tabFaitsFinaux.length - 1;
 
 			if (tabFaitsFinaux [indice] == FactBase.EVENT_CHECK_FOLD && this.CanCheck(_pokerTable)) 	
 				Check ();
 			else if (tabFaitsFinaux [indice] == FactBase.EVENT_SUIVRE) 	
 				Call (_pokerTable.GetValueToCall());
 			else if (tabFaitsFinaux [indice] == FactBase.EVENT_RELANCER) 	
-				Raise(Math.floor(stackValue * Math.random() / 2), _pokerTable.GetValueToCall());
+				// On effectue une relance aléatoire comprise entre 1 et 4 fois la big blind
+				Raise(1 + Math.floor(Math.random() * 3) * _pokerTable.GetBigBlind(), _pokerTable.GetValueToCall());
 			else if (this.CanCheck(_pokerTable))
 				Check();
 			else
@@ -268,18 +271,19 @@
 				}
 			}
 			
-			var positionMain:int 			= RetournePositionMain (tabAmeliorationPossible);
+			// Ici lenght du tab - RetournePositionMain pour avoir la position réelle de la main 
+			var positionMain:int 			= tabAmeliorationPossible.length - RetournePositionMain (tabAmeliorationPossible);
 			var pourcentage:Number			= (positionMain * 100) / tabAmeliorationPossible.length;
 
-			if (pourcentage < 25)
+			if (pourcentage < 20)
 			{
 				expertSystem.SetFactValue(FactBase.MAIN_SUP_TRES_HAUTE, true);
 			}
-			else if (pourcentage < 50)
+			else if (pourcentage < 40)
 			{
 				expertSystem.SetFactValue(FactBase.MAIN_SUP_HAUTE, true);
 			}
-			else if (pourcentage < 75)
+			else if (pourcentage < 60)
 			{
 				expertSystem.SetFactValue(FactBase.MAIN_SUP_BASSE, true);
 			}
@@ -306,21 +310,21 @@
 			var tabListeValeursPositionMain:Array 	= new Array();
 			tabListeValeursPositionMain				= RenvoieListeValeursMainsPossibles(_pokerTable);
 			var valeursPossibles:int				= tabListeValeursPositionMain.length;
-			trace("valeur possible : " + valeursPossibles);
+			//trace("valeur possible : " + valeursPossibles);
 
 			var positionMain:int 					= RetournePositionMain (tabListeValeursPositionMain);
 			var pourcentage:Number					= (positionMain * 100) / valeursPossibles;
-			trace("---------> pourcentage : " + pourcentage+"("+positionMain+")");
+			trace("SetFaitPositionMain ---------> pourcentage : " + pourcentage+"("+positionMain+")");
 
-			if (pourcentage < 25)
+			if (pourcentage < 20)
 			{
 				expertSystem.SetFactValue(FactBase.PARTIE_TRES_HAUTE, true);
 			}
-			else if (pourcentage < 50)
+			else if (pourcentage < 40)
 			{
 				expertSystem.SetFactValue(FactBase.PARTIE_HAUTE, true);
 			}
-			else if (pourcentage < 75)
+			else if (pourcentage < 60)
 			{
 				expertSystem.SetFactValue(FactBase.PARTIE_BASSE, true);
 			}
@@ -361,7 +365,7 @@
 				var valeurMainRetour:int = 10000;
 				var valeurMainTemp:int;
 				var tabCartesMainTemp:Array = new Array();
-				// On teste les 6 
+				// On teste les 6 main possibles
 				for (var iterator:int = 0; iterator < 6; iterator++)
 				{
 					for (var indice:int = 0; indice < 6; indice++)
